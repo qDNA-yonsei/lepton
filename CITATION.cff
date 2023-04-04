@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+
+- family-names: "Araujo"
+  given-names:  "Israel F."
+  orcid: "https://orcid.org/0000-0002-0308-8701"
+
+- family-names: "Park"
+  given-names: "Daniel K."
+  orcid: "https://orcid.org/0000-0002-3177-4143"
+
+title: "Lepton"
+version: 0.0.1
+doi: 
+date-released: 2023-04-04
+url: "https://github.com/qDNA-yonsei/lepton"
