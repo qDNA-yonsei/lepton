@@ -22,6 +22,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
 
     // Loop over each line in the file
     int qubit, qubit_target, num_qubits = MAX_QUBITS;
+    int qubit_control1, qubit_control2;
     char line[100];
     char instruction[MAX_GATE_NAME_LEN];
     int qubit_offsets[MAX_QUBITS];
@@ -64,6 +65,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
             }
         }
         else if (strcmp(instruction, "cx") == 0 || strcmp(instruction, "cz") == 0) {
+            // Two-qubit instruction
             sscanf(line, "%s q[%d], q[%d];", instruction, &qubit, &qubit_target);
 
             char target_symbol = 'x';
@@ -102,7 +104,52 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
             }
             
         }
+        else if (strcmp(instruction, "ccx") == 0) {
+            // Three-qubit instruction
+            sscanf(line, "%s q[%d], q[%d], q[%d]", instruction, &qubit_control1, &qubit_control2, &qubit_target);
+
+            char target_symbol = 'x';
+            
+            int row_control1 = qubit_control1 * 2;
+            int col_control1 = qubit_offsets[qubit_control1];
+            int row_control2 = qubit_control2 * 2;
+            int col_control2 = qubit_offsets[qubit_control2];
+            int row_target = qubit_target * 2;
+            int col_target = qubit_offsets[qubit_target];
+
+            int col = (col_control1 > col_target) ? col_control1: col_target;
+            col = (col_control2 > col) ? col_control2: col;
+            col += 1;
+
+            circuit[row_control1][col] = 'o';
+            circuit[row_control2][col] = 'o';
+            circuit[row_target][col] = target_symbol;
+
+            int qubit_max = (qubit_control1 < qubit_target) ? qubit_target : qubit_control1;
+            qubit_max = (qubit_control2 < qubit_max) ? qubit_max : qubit_control2;
+            int qubit_min = (qubit_control1 < qubit_target) ? qubit_control1 : qubit_target;
+            qubit_min = (qubit_control2 < qubit_min) ? qubit_control2 : qubit_min;
+            for (int q = qubit_min; q <= qubit_max; q++) {
+                int row = q * 2;
+
+                for (int i = qubit_offsets[q]; i < col; i++) {
+                    circuit[row][i] = '-';
+                }
+                
+                qubit_offsets[q] = col + 1;
+            }
+
+            circuit[qubit_min * 2 + 1][col] = '|';
+            for (int q = qubit_min + 1; q < qubit_max; q++) {
+                int row = q * 2;
+                
+                circuit[row][col] = '|';
+                circuit[row + 1][col] = '|';
+            }
+            
+        }
         else {
+            // Single-qubit instruction
             sscanf(line, "%s q[%d]", instruction, &qubit);
 
             if (strcmp(instruction, "measure") == 0) {
