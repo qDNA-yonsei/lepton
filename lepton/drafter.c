@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_QUBITS 10
-#define MAX_GATE_NAME_LEN 10
-#define CIRCUIT_WIDTH 20
-#define CIRCUIT_DEPTH 100
+#define MAX_QASM_LINE_LEN 64
+#define MAX_GATE_NAME_LEN 8
+#define MAX_QUBITS 16
+#define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
+#define CIRCUIT_DEPTH 128 // 32*128 = 4kB
 
 // Parse a QASM file and store the circuit in a 2D array of characters
 void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH])
@@ -23,7 +24,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
     // Loop over each line in the file
     int qubit, qubit_target, num_qubits = MAX_QUBITS;
     int qubit_control1, qubit_control2;
-    char line[100];
+    char line[MAX_QASM_LINE_LEN];
     char instruction[MAX_GATE_NAME_LEN];
     int qubit_offsets[MAX_QUBITS];
     for (int i = 0; i < MAX_QUBITS; i++) {
@@ -66,7 +67,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
         }
         else if (strcmp(instruction, "cx") == 0 || strcmp(instruction, "cz") == 0) {
             // Two-qubit instruction
-            sscanf(line, "%s q[%d], q[%d];", instruction, &qubit, &qubit_target);
+            sscanf(line, "%s q[%d], q[%d]", instruction, &qubit, &qubit_target);
 
             char target_symbol = 'x';
             if (strcmp(instruction, "cz") == 0) {
@@ -150,24 +151,26 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
         }
         else {
             // Single-qubit instruction
-            sscanf(line, "%s q[%d]", instruction, &qubit);
+            if (strlen(line) > 6) { 
+                sscanf(line, "%s q[%d]", instruction, &qubit);
 
-            if (strcmp(instruction, "measure") == 0) {
-                instruction[0] = 'M';
-                instruction[1] = '\0';
+                if (strcmp(instruction, "measure") == 0) {
+                    instruction[0] = 'M';
+                    instruction[1] = '\0';
+                }
+
+                int row = qubit * 2;
+                int col = qubit_offsets[qubit];
+
+                circuit[row][col] = '-';
+                col += 1;
+
+                int i;
+                for (i = 0; i < strlen(instruction); i++) {
+                    circuit[row][col+i] = instruction[i];
+                }
+                qubit_offsets[qubit] = col + i;
             }
-
-            int row = qubit * 2;
-            int col = qubit_offsets[qubit];
-
-            circuit[row][col] = '-';
-            col += 1;
-
-            int i;
-            for (i = 0; i < strlen(instruction); i++) {
-                circuit[row][col+i] = instruction[i];
-            }
-            qubit_offsets[qubit] = col + i;
         }
 
     }
