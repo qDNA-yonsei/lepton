@@ -1,12 +1,36 @@
+/* Drafter version 0.0.1
+   ASCII art of circuit diagrams
+
+   https://github.com/qDNA-yonsei/lepton
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define lower_case(c) ((c) | 32)
 
 #define MAX_QASM_LINE_LEN 64
 #define MAX_GATE_NAME_LEN 8
 #define MAX_QUBITS 16
 #define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
 #define CIRCUIT_DEPTH 128 // 32*128 = 4kB
+
+const char *presentation =
+    "DRAFTER version 0.0.1\n"
+    "ASCII art of circuit diagrams\n"
+    "By github.com/qDNA-yonsei/lepton, 2023\n"
+    "\n";
+
+const char *usage =
+    "Usage: drafter [<qasm>] [/s] [/h]\n"
+    "\n"
+    "<qasm>: QASM file name.\n"
+    "/s: Silent mode.\n"
+    "    The presentation is not printed.\n"
+    "/h: This help.\n";
+
+const char* invalid_parameter = "Invalid parameter(s)\n";
 
 // Parse a QASM file and store the circuit in a 2D array of characters
 void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH])
@@ -22,8 +46,9 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
     }
 
     // Loop over each line in the file
-    int qubit, qubit_target, num_qubits = MAX_QUBITS;
+    int qubit_target;
     int qubit_control1, qubit_control2;
+    int num_qubits = MAX_QUBITS;
     char line[MAX_QASM_LINE_LEN];
     char instruction[MAX_GATE_NAME_LEN];
     int qubit_offsets[MAX_QUBITS];
@@ -67,15 +92,15 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
         }
         else if (strcmp(instruction, "cx") == 0 || strcmp(instruction, "cz") == 0) {
             // Two-qubit instruction
-            sscanf(line, "%s q[%d], q[%d]", instruction, &qubit, &qubit_target);
+            sscanf(line, "%s q[%d], q[%d]", instruction, &qubit_control1, &qubit_target);
 
             char target_symbol = 'x';
             if (strcmp(instruction, "cz") == 0) {
                 target_symbol = 'o';
             }
 
-            int row_control = qubit * 2;
-            int col_control = qubit_offsets[qubit];
+            int row_control = qubit_control1 * 2;
+            int col_control = qubit_offsets[qubit_control1];
             int row_target = qubit_target * 2;
             int col_target = qubit_offsets[qubit_target];
 
@@ -84,8 +109,8 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
             circuit[row_control][col] = 'o';
             circuit[row_target][col] = target_symbol;
 
-            int qubit_max = (qubit < qubit_target) ? qubit_target : qubit;
-            int qubit_min = (qubit < qubit_target) ? qubit : qubit_target;
+            int qubit_max = (qubit_control1 < qubit_target) ? qubit_target : qubit_control1;
+            int qubit_min = (qubit_control1 < qubit_target) ? qubit_control1 : qubit_target;
             for (int q = qubit_min; q <= qubit_max; q++) {
                 int row = q * 2;
 
@@ -152,15 +177,15 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
         else {
             // Single-qubit instruction
             if (strlen(line) > 6) { 
-                sscanf(line, "%s q[%d]", instruction, &qubit);
+                sscanf(line, "%s q[%d]", instruction, &qubit_target);
 
                 if (strcmp(instruction, "measure") == 0) {
                     instruction[0] = 'M';
                     instruction[1] = '\0';
                 }
 
-                int row = qubit * 2;
-                int col = qubit_offsets[qubit];
+                int row = qubit_target * 2;
+                int col = qubit_offsets[qubit_target];
 
                 circuit[row][col] = '-';
                 col += 1;
@@ -169,7 +194,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                 for (i = 0; i < strlen(instruction); i++) {
                     circuit[row][col+i] = instruction[i];
                 }
-                qubit_offsets[qubit] = col + i;
+                qubit_offsets[qubit_target] = col + i;
             }
         }
 
@@ -214,15 +239,44 @@ void print_circuit(char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH])
 
 int main(int argc, char** argv)
 {
-    // Check for correct number of command line arguments
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s [QASM file]\n", argv[0]);
+    
+    if(argc == 1) {
+        printf(presentation);
+        printf(usage);
         exit(EXIT_FAILURE);
+    }
+
+    char present = 1;
+    char param_letter;
+    const char* filename;
+    for (int param = 0; param < argc; param++) {
+        if(argv[param][0] == '/') {
+            param_letter = lower_case(argv[param][1]);
+            if(param_letter == 's') {
+                present = 0;
+            }
+            else if(param_letter == 'h') {
+                printf(presentation);
+                printf(usage);
+                return 0;
+            }
+            else {
+                printf(invalid_parameter);
+                exit(EXIT_FAILURE);
+            }
+        }
+        else {
+            filename = argv[param];
+        }
+    }
+
+    if (present) {
+        printf(presentation);
     }
 
     // Parse QASM file and print circuit
     char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH];
-    parse_qasm(argv[1], circuit);
+    parse_qasm(filename, circuit);
     print_circuit(circuit);
 
     return 0;
