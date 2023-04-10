@@ -47,20 +47,24 @@ sparse_element *sparse_kronecker_product(sparse_element *A, int nnzA, sparse_ele
     sparse_element* C = (sparse_element*)malloc((*nnzC) * sizeof(sparse_element));
 
     int k = 0;
+    complex valueA, valueB, *valueC;
     for (int i = 0; i < nnzA; i++) {
         int rowA = A[i].row;
         int colA = A[i].col;
-        complex valueA = A[i].value;
+        valueA = A[i].value;
         for (int j = 0; j < nnzB; j++) {
             int rowB = B[j].row;
             int colB = B[j].col;
-            complex valueB = B[j].value;
+
+            valueB = B[j].value;
             int rowC = rowA * nB + rowB;
             int colC = colA * nB + colB;
-            complex valueC = multiply_complex(valueA, valueB);
+
+            valueC = multiply_complex(valueA, valueB);
             C[k].row = rowC;
             C[k].col = colC;
-            C[k].value = valueC;
+            C[k].value = *valueC;
+            free(valueC);
             k++;
         }
     }
@@ -86,11 +90,17 @@ complex *sparse_matrix_vector_multiplication(sparse_element *A, int nnz, complex
         y[i].imag = 0;
     }
 
+    complex value, *mult, *add;
     for (int i = 0; i < nnz; i++) {
         int row = A[i].row;
         int col = A[i].col;
-        complex value = A[i].value;
-        y[row] = add_complex(y[row], multiply_complex(value, x[col]));
+        value = A[i].value;
+
+        mult = multiply_complex(value, x[col]);
+        add = add_complex(y[row], *mult);
+        y[row] = *add;
+        free(mult);
+        free(add);
     }
 
     return y;

@@ -2,15 +2,20 @@
 
 all: build clean
 
+BIN := ../../bin/linux
+LIB := ../../lepton/lib
+EXAMPLES := ../../lepton/examples
+TOOLS := ../../lepton/tools
+
 build:
 	@echo "Processing ... !"
-	@cp ../../lepton/*.* ./
-	@rm -f adhoc_sim drafter complex.o sparse_matrix.o measurement.o
-	@gcc -c complex.c
-	@gcc -c sparse_matrix.c
-	@gcc -c measurement.c
-	@gcc adhoc_sim.c complex.o sparse_matrix.o measurement.o -o adhoc_sim -lm
-	@gcc drafter.c -o drafter
-	
+	@mkdir -p $(BIN)
+	@rm -f $(BIN)/sim_bell $(BIN)/drafter $(BIN)/*.o
+	@gcc -c $(LIB)/complex.c -o $(BIN)/complex.o
+	@gcc -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o
+	@gcc -c $(LIB)/measurement.c -o $(BIN)/measurement.o
+	@gcc $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o -o $(BIN)/sim_bell -lm
+	@gcc -o $(BIN)/drafter $(TOOLS)/drafter.c
+
 clean:
-	@rm -f *.c *.h *.o
+	@rm -f $(BIN)/*.c $(BIN)/*.h $(BIN)/*.o
