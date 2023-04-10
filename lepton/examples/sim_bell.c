@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "sparse_matrix.h"
-#include "measurement.h"
+#include "../lib/sparse_matrix.h"
+#include "../lib/measurement.h"
+
+#pragma printf = "%d %s %c %f"
 
 void print_state_vector(complex *state_vector, int num_qubits)
 {
-    int length = pow(2, num_qubits);
-    // Standard format.
-    for (int i = 0; i < length; i++) {
+    unsigned int length = 1 << num_qubits;
+    //printf("_standard format_\n");
+    for (unsigned int i = 0; i < length; i++) {
         print_complex(state_vector[i]);
-        printf(" ");
+        printf("\n");
     }
-    printf("\n");
-    // Polar format.
-    for (int i = 0; i < length; i++) {
-        print_complex_polar(state_vector[i]);
-        printf(" ");
-    }
-    printf("\n");
+    // printf("\n_polar format_\n");
+    // for (int i = 0; i < length; i++) {
+    //     print_complex_polar(state_vector[i]);
+    //     printf("\n");
+    // }
 }
 
 int main(int argc, char *argv[], char *envv[])
@@ -66,7 +66,7 @@ int main(int argc, char *argv[], char *envv[])
     cnot[3].value.real = 1.0;
     cnot[3].value.imag = 0.0;
 
-    // Initialize the Identity gate.    
+    // Initialize the Identity gate.
     id[0].row = 0;
     id[0].col = 0;
     id[0].value.real = 1;
@@ -109,21 +109,23 @@ int main(int argc, char *argv[], char *envv[])
     x_1[1].col = 0;
     x_1[1].value.real = 1;
     x_1[1].value.imag = 0;
-    
+
     int nnzX;
     x = sparse_kronecker_product(x_1, 2, id, 2, 2, &nnzX); // two-qubit X. |00>-|11>
     //x = sparse_kronecker_product(id, 2, x_1, 2, 2, &nnzX); // two-qubit X. |01>+|10>
 
     /* Perform the simulation. */
-    complex *current_state;
-    current_state = state_vector;
-    current_state = sparse_matrix_vector_multiplication(x, nnzX, current_state, 4);
-    current_state = sparse_matrix_vector_multiplication(h, nnzH, current_state, 4);
-    current_state = sparse_matrix_vector_multiplication(cnot, 4, current_state, 4);
+    complex *current_state, *current_state2;
+    current_state = sparse_matrix_vector_multiplication(x, nnzX, state_vector, 4);
+    current_state2 = sparse_matrix_vector_multiplication(h, nnzH, current_state, 4);
+    free(current_state);
+    current_state = sparse_matrix_vector_multiplication(cnot, 4, current_state2, 4);
+    free(current_state2);
 
     /* Print final state vector. */
     printf("State vector before the measurement:\n");
     print_state_vector(current_state, 2);
+    printf("\n");
 
     /* Perform one measurement on two qubits. */
     int qubits_to_measure[2];
@@ -132,10 +134,11 @@ int main(int argc, char *argv[], char *envv[])
     int outcome = measure(current_state, 2, qubits_to_measure, 2);
 
     /* Print state vector after the measurement. */
-    printf("\nState vector after the measurement:\n");
+    printf("State vector after the measurement:\n");
     print_state_vector(current_state, 2);
+    printf("\n");
 
-    printf("\nMeasurement outcome: %d\n", outcome);
+    printf("Measurement outcome: %d\n", outcome);
 
     return 0;
 }
