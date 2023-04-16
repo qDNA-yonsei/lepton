@@ -18,6 +18,14 @@ void print_complex_polar(complex a)
     printf("%f*exp(%fi)", magnitude, angle);
 }
 
+// Convert polar information into a standard complex number
+complex *polar_to_standard(double mag, double arg) {
+    complex *a = (complex*)malloc(sizeof(complex));
+    a->real = mag * cos(arg);
+    a->imag = mag * sin(arg);
+    return a;
+}
+
 /* Arithmetic operations */
 
 // Add two complex numbers: a + b
