@@ -3,6 +3,6 @@
 
 #include "complex.h"
 
-extern int measure(complex *state_vector, int num_qubits, int *qubits_to_measure, int num_qubits_to_measure);
+extern int measure(complex *state_vector, unsigned char num_qubits, unsigned char *qubits_to_measure, unsigned char num_qubits_to_measure, char trace_out);
 
 #endif /* MEASUREMENT_H */

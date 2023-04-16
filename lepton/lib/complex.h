@@ -17,6 +17,7 @@ typedef struct {
 
 extern void print_complex(complex a);
 extern void print_complex_polar(complex a);
+extern complex *polar_to_standard(double mag, double arg);
 
 /* Arithmetic operations */
 extern complex *add_complex(complex a, complex b);
