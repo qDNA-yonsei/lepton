@@ -10,11 +10,19 @@
 
 #define lower_case(c) ((c) | 32)
 
-#define MAX_QASM_LINE_LEN 64
 #define MAX_GATE_NAME_LEN 8
-#define MAX_QUBITS 16
-#define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
-#define CIRCUIT_DEPTH 128 // 32*128 = 4kB
+
+#ifdef __Z88DK
+    #define MAX_QASM_LINE_LEN 64
+    #define MAX_QUBITS 16
+    #define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
+    #define CIRCUIT_DEPTH 128 // 32*128 = 4kB
+#else
+    #define MAX_QASM_LINE_LEN 1024
+    #define MAX_QUBITS 32
+    #define CIRCUIT_WIDTH 64
+    #define CIRCUIT_DEPTH 1024
+#endif
 
 const char *presentation =
     "DRAFTER version 0.0.1\n"

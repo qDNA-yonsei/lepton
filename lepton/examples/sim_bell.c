@@ -96,7 +96,7 @@ int main(int argc, char *argv[], char *envv[])
     h_1[3].value.real = -r;
     h_1[3].value.imag = 0;
 
-    int nnzH;
+    unsigned int nnzH;
     h = sparse_kronecker_product(h_1, 4, id, 2, 2, &nnzH); // two-qubit Hadamard.
 
     // Initialize the X gate.
@@ -110,7 +110,7 @@ int main(int argc, char *argv[], char *envv[])
     x_1[1].value.real = 1;
     x_1[1].value.imag = 0;
 
-    int nnzX;
+    unsigned int nnzX;
     x = sparse_kronecker_product(x_1, 2, id, 2, 2, &nnzX); // two-qubit X. |00>-|11>
     //x = sparse_kronecker_product(id, 2, x_1, 2, 2, &nnzX); // two-qubit X. |01>+|10>
 
@@ -128,10 +128,12 @@ int main(int argc, char *argv[], char *envv[])
     printf("\n");
 
     /* Perform one measurement on two qubits. */
-    int qubits_to_measure[2];
+    unsigned char *qubits_to_measure = (unsigned char*)malloc(2 * sizeof(unsigned char));
     qubits_to_measure[0] = 0;
     qubits_to_measure[1] = 1;
-    int outcome = measure(current_state, 2, qubits_to_measure, 2);
+    
+    srand((unsigned int)clock());
+    int outcome = measure(current_state, 2, qubits_to_measure, 2, 1);
 
     /* Print state vector after the measurement. */
     printf("State vector after the measurement:\n");
