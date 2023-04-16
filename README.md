@@ -1,11 +1,21 @@
 # Lepton
-Lepton is an educational set of quantum simulators designed to run on small devices.
+Lepton is an educational collection of quantum simulators designed to run on small devices.
 
 Lepton's simulators are designed for small devices, with two key objectives.
 Firstly, it aims to be didactic by providing complete access to all mathematical routines and simulation steps in its easy-to-read source code.
 Secondly, it is optimized to run efficiently on small devices, including 8-bit computers. Keeping a small device as a baseline can help ensure that the code remains simple and efficient.
 
 Although it is not intended to replace existing quantum simulation libraries, such as Qiskit or Pennylane, Lepton offers a unique approach to quantum simulation that is both accessible and efficient.
+
+## Importance of quantum computing simulators
+
+Quantum computing simulators play a critical role in the development and implementation of practical quantum computing applications. These software programs simulate the behavior of quantum systems, providing researchers and engineers with a controlled environment to experiment with and validate quantum algorithms and circuits.
+
+One of the key advantages of simulators is that they enable researchers to study the behavior of limited-sized quantum systems with high precision. This is particularly useful in the validation of quantum algorithms and protocols, where it is necessary to test and verify the behavior of complex quantum circuits in various scenarios and conditions. By enabling researchers to quickly iterate on their ideas and validate them efficiently, simulators accelerate the development of practical quantum computing applications.
+
+Simulators are also valuable for training and educating students and researchers in quantum computing. They provide a virtual environment where students and researchers can experiment and learn practical skills without the need for physical and expensive resources. As such, simulators are essential tools for building the next generation of quantum computing experts.
+
+However, it is important to note that quantum computing simulators have limitations and cannot completely replicate the behavior of real quantum systems. As such, it is crucial to validate the results obtained using simulators by conducting experiments on real quantum hardware. This is necessary to ensure the reliability and accuracy of the final results. The combination of simulators and real quantum systems will likely be used in tandem in the future, allowing researchers to efficiently validate and optimize quantum circuits while leveraging the unique capabilities of real quantum systems.
 
 ## Repository folders
 
@@ -25,7 +35,7 @@ Although it is not intended to replace existing quantum simulation libraries, su
 
 ## How to build Lepton
 
-Lepton requires Linux to be built. It should work on macOs too, but that hasn't been tested. If you are on Windows 10 or 11 you can use [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
+Lepton requires Linux to be built. It should work on macOS too, but that hasn't been tested. If you are on Windows 10 or 11 you can use [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
 
 To build Lepton you'll need:
 
