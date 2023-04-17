@@ -156,10 +156,6 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                 col = (col_control2 > col) ? col_control2: col;
                 col += 1;
 
-                circuit[row_control1][col] = 'o';
-                circuit[row_control2][col] = 'o';
-                circuit[row_target][col] = target_symbol;
-
                 unsigned char qubit_max = (qubit_control1 < qubit_target) ? qubit_target : qubit_control1;
                 qubit_max = (qubit_control2 < qubit_max) ? qubit_max : qubit_control2;
                 unsigned char qubit_min = (qubit_control1 < qubit_target) ? qubit_control1 : qubit_target;
@@ -175,12 +171,17 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                 }
 
                 circuit[qubit_min * 2 + 1][col] = '|';
+                unsigned char row;
                 for (unsigned char q = qubit_min + 1; q < qubit_max; q++) {
-                    unsigned char row = q * 2;
+                    row = q * 2;
                     
                     circuit[row][col] = '|';
                     circuit[row + 1][col] = '|';
                 }
+
+                circuit[row_control1][col] = 'o';
+                circuit[row_control2][col] = 'o';
+                circuit[row_target][col] = target_symbol;
                 
             }
             else {
