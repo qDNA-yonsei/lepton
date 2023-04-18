@@ -67,7 +67,7 @@ complex *divide_complex(complex a, complex b)
 
 /* Basic operations*/
 
-// Absolute value (or modulus or magnitude) of a complex number 
+// Absolute value (or modulus or magnitude) of a complex number
 double complex_abs(complex a)
 {
     double b;

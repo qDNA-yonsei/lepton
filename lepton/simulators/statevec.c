@@ -8,22 +8,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "../lib/sparse_matrix.h"
 #include "../lib/gate.h"
 #include "../lib/measurement.h"
 
-#pragma printf = "%d %s %c %f"
+#pragma printf = "%d %s %f"
 
 #define lower_case(c) ((c) | 32)
 
 #define MAX_INSTRUCTION_LEN 8
 
 #ifdef __Z88DK
-    #define MAX_QUBITS 8
-    #define MAX_QASM_LINE_LEN 64
+#define MAX_QUBITS 8
+#define MAX_QASM_LINE_LEN 64
 #else
-    #define MAX_QUBITS 32
-    #define MAX_QASM_LINE_LEN 1024
+#define MAX_QUBITS 32
+#define MAX_QASM_LINE_LEN 1024
 #endif
 
 #ifdef DEBUG
@@ -59,7 +60,7 @@ void print_bits(int const size, void const * const ptr)
     unsigned char *b = (unsigned char*) ptr;
     unsigned char byte;
     int j;
-    
+
     for (j = size-1; j >= 0; j--) {
         byte = (b[0] >> j) & 1;
         printf("%d", byte);
@@ -128,7 +129,7 @@ complex *parse_qasm(
                 debug("parse_qasm: qreg")
 
                 sscanf(line, "%s q[%d]", instruction, num_qubits);
-                
+
                 debug2("parse_qasm: qreg : instruction = %s", instruction)
                 debug2("parse_qasm: qreg : num_qubits = %d", *num_qubits)
 
@@ -143,7 +144,7 @@ complex *parse_qasm(
                     state_vector[i].real = 0.0;
                     state_vector[i].imag = 0.0;
                 }
-                
+
                 // Initialize qubits to measure
                 memset(qubits_to_measure, 0, *num_qubits); // Max. num_qubits.
             }
@@ -163,10 +164,10 @@ complex *parse_qasm(
 
                 // Single-qubit parameterized instruction
                 sscanf(line, "%s(%s) q[%d]", instruction, instruction2, &qubit_target);
-                
+
                 double parameter_value;
                 double parameter_value2;
-                
+
                 char index;
                 char *slash;
                 slash = strchr(instruction2, '/');
@@ -190,7 +191,7 @@ complex *parse_qasm(
 
                 if (index > -1) {
                     sscanf(instruction3, "%f", &parameter_value2);
-                    parameter_value = parameter_value / parameter_value2; 
+                    parameter_value = parameter_value / parameter_value2;
                 }
 
                 unsigned int nnz;
@@ -255,7 +256,7 @@ complex *parse_qasm(
             else {
                 debug("parse_qasm: single-qubit")
 
-                // Single-qubit instruction 
+                // Single-qubit instruction
                 sscanf(line, "%s q[%d]", instruction, &qubit_target);
 
                 if (strcmp(instruction, "measure") == 0) {
@@ -267,7 +268,7 @@ complex *parse_qasm(
 
                     unsigned int nnz;
                     sparse_element *gate;
-                    
+
                     if (strcmp(instruction, "x") == 0) {
                         debug("parse_qasm: x")
                         gate = x(*num_qubits, qubit_target, &nnz);
@@ -285,7 +286,7 @@ complex *parse_qasm(
                         debug2("parse_qasm: h : num_qubits = %d", *num_qubits)
                         debug2("parse_qasm: h : qubit_target = %d", qubit_target)
                         debug2("parse_qasm: h : &nnz = %d", &nnz)
-                        
+
                         gate = h(*num_qubits, qubit_target, &nnz);
                     }
                     else {

@@ -15,10 +15,10 @@ build:
 	@gcc -c $(LIB)/complex.c -o $(BIN)/complex.o
 	@gcc -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o
 	@gcc -c $(LIB)/measurement.c -o $(BIN)/measurement.o
-	@gcc -DDEBUG -c $(LIB)/gate.c -o $(BIN)/gate.o
+	@gcc -c $(LIB)/gate.c -o $(BIN)/gate.o
 	@gcc $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o -o $(BIN)/sim_bell -lm
 	@gcc -o $(BIN)/drafter $(TOOLS)/drafter.c
-	@gcc -DDEBUG $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec -lm
+	@gcc $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec -lm
 
 clean:
 	@rm -f $(BIN)/*.c $(BIN)/*.h $(BIN)/*.o
