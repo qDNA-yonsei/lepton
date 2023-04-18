@@ -77,7 +77,7 @@ void print_state_vector(complex *state_vector, unsigned char num_qubits)
     }
 }
 
-// Parse a QASM file and store the circuit in a 2D array of characters
+// Parses a QASM file and builds the corresponding quantum gates.
 complex *parse_qasm(
     const char* filename,
     unsigned char *num_qubits,
