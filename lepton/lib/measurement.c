@@ -3,7 +3,13 @@
 #include <math.h>
 #include "measurement.h"
 
-int measure(complex *state_vector, unsigned char num_qubits, unsigned char *qubits_to_measure, unsigned char num_qubits_to_measure, char trace_out)
+int measure(
+    complex *state_vector,
+    unsigned char num_qubits,
+    unsigned char *qubits_to_measure,
+    unsigned char num_qubits_to_measure,
+    char trace_out
+)
 {
     unsigned int length_measure = 1 << num_qubits_to_measure;
     unsigned int length_state = 1 << num_qubits;
@@ -26,9 +32,6 @@ int measure(complex *state_vector, unsigned char num_qubits, unsigned char *qubi
     }
 
     /* Randomly select a state based on the probabilities. */
-    //srand((unsigned int)time(NULL));
-    //srand((unsigned int)clock());
-    //rand();
     double rand_val = ((double)rand() / RAND_MAX);
     double cum_prob = 0.0;
     int measured_state = -1;

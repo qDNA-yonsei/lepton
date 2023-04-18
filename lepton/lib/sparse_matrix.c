@@ -44,10 +44,17 @@ sparse_element *generate_sparse_identity_matrix(unsigned int n)
  *  @param nnzB Number of non-zero elements in spase matrix B.
  *  @param nB Matrix B number of rows (or columns).
  *  @param nnzC Number of non-zero elements in the new spase matrix C.
- * 
+ *
  *  @return Sparse complex matrix of size nnzC.
  */
-sparse_element *sparse_kronecker_product(sparse_element *A, unsigned int nnzA, sparse_element *B, unsigned int nnzB, unsigned int nB, unsigned int *nnzC)
+sparse_element *sparse_kronecker_product(
+    sparse_element *A,
+    unsigned int nnzA,
+    sparse_element *B,
+    unsigned int nnzB,
+    unsigned int nB,
+    unsigned int *nnzC
+)
 {
     *nnzC = nnzA * nnzB;
 
@@ -83,7 +90,7 @@ sparse_element *sparse_kronecker_product(sparse_element *A, unsigned int nnzA, s
 }
 
 /** @brief Multiply a column vector by a sparse matrix.
- * 
+ *
  *  @param A Sparse complex matrix.
  *  @param nnz Number of non-zero elements in spase matrix A.
  *  @param x Complex vector.
@@ -91,7 +98,12 @@ sparse_element *sparse_kronecker_product(sparse_element *A, unsigned int nnzA, s
  *
  *  @return Complex vector of size m.
  */
-complex *sparse_matrix_vector_multiplication(sparse_element *A, unsigned int nnz, complex *x, unsigned int m)
+complex *sparse_matrix_vector_multiplication(
+    sparse_element *A,
+    unsigned int nnz,
+    complex *x,
+    unsigned int m
+)
 {
     unsigned int i;
     complex* y = (complex*)malloc(m * sizeof(complex));
@@ -118,7 +130,7 @@ complex *sparse_matrix_vector_multiplication(sparse_element *A, unsigned int nnz
 }
 
 /** @brief Sums two sparse matrices.
- * 
+ *
  *  @param A Sparse complex matrix.
  *  @param nnzA Number of non-zero elements in spase matrix A.
  *  @param B Sparse complex matrix.
@@ -127,7 +139,13 @@ complex *sparse_matrix_vector_multiplication(sparse_element *A, unsigned int nnz
  *
  *  @return Sparse complex matrix of size nnzC.
  */
-sparse_element *sparse_add(sparse_element* A, unsigned int nnzA, sparse_element* B, unsigned int nnzB, unsigned int *nnzC)
+sparse_element *sparse_add(
+    sparse_element* A,
+    unsigned int nnzA,
+    sparse_element* B,
+    unsigned int nnzB,
+    unsigned int *nnzC
+)
 {
     // allocate memory for the result matrix
     sparse_element* C = (sparse_element*)malloc((nnzA + nnzB) * sizeof(sparse_element));

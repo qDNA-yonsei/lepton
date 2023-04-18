@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "../lib/sparse_matrix.h"
 #include "../lib/measurement.h"
 
-#pragma printf = "%d %s %c %f"
+#pragma printf = "%d"
 
 void print_state_vector(complex *state_vector, int num_qubits)
 {
@@ -131,7 +132,7 @@ int main(int argc, char *argv[], char *envv[])
     unsigned char *qubits_to_measure = (unsigned char*)malloc(2 * sizeof(unsigned char));
     qubits_to_measure[0] = 0;
     qubits_to_measure[1] = 1;
-    
+
     srand((unsigned int)clock());
     int outcome = measure(current_state, 2, qubits_to_measure, 2, 1);
 

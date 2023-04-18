@@ -16,7 +16,7 @@
     #define MAX_QASM_LINE_LEN 64
     #define MAX_QUBITS 16
     #define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
-    #define CIRCUIT_DEPTH 128 // 32*128 = 4kB
+    #define CIRCUIT_DEPTH 128
 #else
     #define MAX_QASM_LINE_LEN 1024
     #define MAX_QUBITS 32
@@ -126,25 +126,25 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                     for (unsigned char i = qubit_offsets[q]; i < col; i++) {
                         circuit[row][i] = '-';
                     }
-                    
+
                     qubit_offsets[q] = col + 1;
                 }
 
                 circuit[qubit_min * 2 + 1][col] = '|';
                 for (unsigned char q = qubit_min + 1; q < qubit_max; q++) {
                     unsigned char row = q * 2;
-                    
+
                     circuit[row][col] = '|';
                     circuit[row + 1][col] = '|';
                 }
-                
+
             }
             else if (strcmp(instruction, "ccx") == 0) {
                 // Three-qubit instruction
                 sscanf(line, "%s q[%d], q[%d], q[%d]", instruction, &qubit_control1, &qubit_control2, &qubit_target);
 
                 char target_symbol = 'x';
-                
+
                 unsigned char row_control1 = qubit_control1 * 2;
                 unsigned char col_control1 = qubit_offsets[qubit_control1];
                 unsigned char row_control2 = qubit_control2 * 2;
@@ -166,7 +166,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                     for (unsigned char i = qubit_offsets[q]; i < col; i++) {
                         circuit[row][i] = '-';
                     }
-                    
+
                     qubit_offsets[q] = col + 1;
                 }
 
@@ -174,7 +174,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                 unsigned char row;
                 for (unsigned char q = qubit_min + 1; q < qubit_max; q++) {
                     row = q * 2;
-                    
+
                     circuit[row][col] = '|';
                     circuit[row + 1][col] = '|';
                 }
@@ -182,10 +182,10 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                 circuit[row_control1][col] = 'o';
                 circuit[row_control2][col] = 'o';
                 circuit[row_target][col] = target_symbol;
-                
+
             }
             else {
-                // Single-qubit instruction 
+                // Single-qubit instruction
                 sscanf(line, "%s q[%d]", instruction, &qubit_target);
 
                 if (strcmp(instruction, "measure") == 0) {
@@ -203,12 +203,12 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                 for (i = 0; i < strlen(instruction); i++) {
                     circuit[row][col+i] = instruction[i];
                 }
-                qubit_offsets[qubit_target] = col + i;   
+                qubit_offsets[qubit_target] = col + i;
             }
         }
 
     }
-    
+
     // Complete wires
     unsigned char max_offset = 0;
     for (unsigned char qubit = 0; qubit < MAX_QUBITS; qubit++) {
@@ -248,7 +248,7 @@ void print_circuit(char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH])
 
 int main(int argc, char** argv)
 {
-    
+
     if(argc == 1) {
         printf(presentation);
         printf(usage);

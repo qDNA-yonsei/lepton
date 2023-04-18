@@ -1,13 +1,9 @@
-/* 
+/*
  * https://en.wikibooks.org/wiki/C_Programming/complex.h
  * https://en.wikipedia.org/wiki/C_mathematical_functions#complex.h
  */
 #ifndef COMPLEX_H
 #define COMPLEX_H
-
-// #ifdef __Z88DK
-//     #define double float
-// #endif
 
 // Struct for a complex number
 typedef struct {
