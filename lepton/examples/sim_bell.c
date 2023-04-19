@@ -3,6 +3,7 @@
 #include <math.h>
 #include <time.h>
 #include "../lib/sparse_matrix.h"
+#include "../lib/gate.h"
 #include "../lib/measurement.h"
 
 #pragma printf = "%d"
@@ -33,95 +34,49 @@ int main(int argc, char *argv[], char *envv[])
      * approach.
     */
 
-    complex state_vector[4]; // Two qubit state vector
-    sparse_element cnot[4];  // CNOT gate
-    sparse_element id[2];    // Identity gate
-    sparse_element *h;       // Hadamard gate
-    sparse_element *x;       // X gate
+    complex state_vector[4];   // Two qubit state vector
+    sparse_element *cnot_gate; // CNOT gate
+    sparse_element *id_gate;   // Identity gate
+    sparse_element *h_gate;    // Hadamard gate
+    sparse_element *x_gate;    // X gate
 
     // Initialize the state vector.
     state_vector[0].real = 1.0;
     state_vector[0].imag = 0.0;
-    state_vector[1].real = 0.0;
-    state_vector[1].imag = 0.0;
-    state_vector[2].real = 0.0;
-    state_vector[2].imag = 0.0;
-    state_vector[3].real = 0.0;
-    state_vector[3].imag = 0.0;
+    for (unsigned int i = 1; i < 4; i++) {
+        state_vector[i].real = 0.0;
+        state_vector[i].imag = 0.0;
+    }
+
+    unsigned int nnzCx;
+    unsigned int nnzId;
+    unsigned int nnzH;
+    unsigned int nnzX;
 
     // Initialize the CNOT gate.
-    cnot[0].row = 0;
-    cnot[0].col = 0;
-    cnot[0].value.real = 1.0;
-    cnot[0].value.imag = 0.0;
-    cnot[1].row = 1;
-    cnot[1].col = 1;
-    cnot[1].value.real = 1.0;
-    cnot[1].value.imag = 0.0;
-    cnot[2].row = 2;
-    cnot[2].col = 3;
-    cnot[2].value.real = 1.0;
-    cnot[2].value.imag = 0.0;
-    cnot[3].row = 3;
-    cnot[3].col = 2;
-    cnot[3].value.real = 1.0;
-    cnot[3].value.imag = 0.0;
+    cnot_gate = cx(2, 1, 0, &nnzCx);
 
-    // Initialize the Identity gate.
-    id[0].row = 0;
-    id[0].col = 0;
-    id[0].value.real = 1;
-    id[0].value.imag = 0;
-    id[1].row = 1;
-    id[1].col = 1;
-    id[1].value.real = 1;
-    id[1].value.imag = 0;
+    // Initialize the Identity gat1
+    id_gate = id(2, &nnzId);
 
     // Initialize the Hadamard gate.
-    sparse_element h_1[4]; // single-qubit Hadamard.
-    double r = 1/sqrt(2);
-    h_1[0].row = 0;
-    h_1[0].col = 0;
-    h_1[0].value.real = r;
-    h_1[0].value.imag = 0;
-    h_1[1].row = 0;
-    h_1[1].col = 1;
-    h_1[1].value.real = r;
-    h_1[1].value.imag = 0;
-    h_1[2].row = 1;
-    h_1[2].col = 0;
-    h_1[2].value.real = r;
-    h_1[2].value.imag = 0;
-    h_1[3].row = 1;
-    h_1[3].col = 1;
-    h_1[3].value.real = -r;
-    h_1[3].value.imag = 0;
-
-    unsigned int nnzH;
-    h = sparse_kronecker_product(h_1, 4, id, 2, 2, &nnzH); // two-qubit Hadamard.
-
+    h_gate = h(2, 0, &nnzH);
+    
     // Initialize the X gate.
-    sparse_element x_1[4]; // single-qubit X.
-    x_1[0].row = 0;
-    x_1[0].col = 1;
-    x_1[0].value.real = 1;
-    x_1[0].value.imag = 0;
-    x_1[1].row = 1;
-    x_1[1].col = 0;
-    x_1[1].value.real = 1;
-    x_1[1].value.imag = 0;
-
-    unsigned int nnzX;
-    x = sparse_kronecker_product(x_1, 2, id, 2, 2, &nnzX); // two-qubit X. |00>-|11>
-    //x = sparse_kronecker_product(id, 2, x_1, 2, 2, &nnzX); // two-qubit X. |01>+|10>
+    x_gate = x(2, 0, &nnzX);
 
     /* Perform the simulation. */
     complex *current_state, *current_state2;
-    current_state = sparse_matrix_vector_multiplication(x, nnzX, state_vector, 4);
-    current_state2 = sparse_matrix_vector_multiplication(h, nnzH, current_state, 4);
+    current_state = sparse_matrix_vector_multiplication(x_gate, nnzX, state_vector, 4);
+    current_state2 = sparse_matrix_vector_multiplication(h_gate, nnzH, current_state, 4);
     free(current_state);
-    current_state = sparse_matrix_vector_multiplication(cnot, 4, current_state2, 4);
+    current_state = sparse_matrix_vector_multiplication(cnot_gate, nnzCx, current_state2, 4);
+    
     free(current_state2);
+    free(cnot_gate);
+    free(id_gate);
+    free(h_gate);
+    free(x_gate);
 
     /* Print final state vector. */
     printf("State vector before the measurement:\n");
