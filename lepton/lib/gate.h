@@ -34,6 +34,7 @@ sparse_element *p(double lambda, unsigned char num_qubits, unsigned char target,
 sparse_element *u(double theta, double phi, double lambda, unsigned char num_qubits, unsigned char target, unsigned int *nnz);
 
 sparse_element *cx(unsigned char num_qubits, unsigned char target, unsigned char control, unsigned int *nnz);
+sparse_element *cy(unsigned char num_qubits, unsigned char target, unsigned char control, unsigned int *nnz);
 sparse_element *cz(unsigned char num_qubits, unsigned char target, unsigned char control, unsigned int *nnz);
 
 sparse_element *ccx(unsigned char num_qubits, unsigned char target, unsigned char control1, unsigned char control2, unsigned int *nnz);

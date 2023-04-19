@@ -252,6 +252,31 @@ sparse_element *cx(
     return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz, 0);
 }
 
+sparse_element *cy(
+    unsigned char num_qubits,
+    unsigned char target,
+    unsigned char control,
+    unsigned int *nnz
+)
+{
+    sparse_element gate[2];
+
+    gate[0].row = 0;
+    gate[0].col = 1;
+    gate[0].value.real = 0.0;
+    gate[0].value.imag = -1.0;
+
+    gate[1].row = 1;
+    gate[1].col = 0;
+    gate[1].value.real = 0.0;
+    gate[1].value.imag = 1.0;
+
+    unsigned char controls[1];
+    controls[0] = control;
+
+    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz, 0);
+}
+
 sparse_element *cz(
     unsigned char num_qubits,
     unsigned char target,
