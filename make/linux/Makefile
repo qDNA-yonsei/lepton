@@ -16,7 +16,7 @@ build:
 	@gcc -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o
 	@gcc -c $(LIB)/measurement.c -o $(BIN)/measurement.o
 	@gcc -c $(LIB)/gate.c -o $(BIN)/gate.o
-	@gcc $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o -o $(BIN)/sim_bell -lm
+	@gcc $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/sim_bell -lm
 	@gcc -o $(BIN)/drafter $(TOOLS)/drafter.c
 	@gcc $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec -lm
 
