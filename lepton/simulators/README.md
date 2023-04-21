@@ -9,6 +9,10 @@ Quantum state vector simulators are useful for studying the behavior of quantum 
 
 Several quantum state vector simulators are available, including [IBM's Qiskit Aer](https://qiskit.org/ecosystem/aer/stubs/qiskit_aer.AerSimulator.html), [Google's Cirq](https://quantumai.google/cirq/simulate), and [Microsoft's Q# quantum simulators](https://learn.microsoft.com/en-us/azure/quantum/machines/full-state-simulator).
 
+[![State vector simulator running on a 8-bit computer]  // Title
+(https://i.ytimg.com/vi/2BQv1TSv4n4/maxresdefault.jpg)] // Thumbnail
+(https://youtu.be/2BQv1TSv4n4 "State vector simulator running on a 8-bit computer")    // Video Link
+
 File:
 [statevec.c](statevec.c)
 
