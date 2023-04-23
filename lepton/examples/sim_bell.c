@@ -6,7 +6,7 @@
 #include "../lib/gate.h"
 #include "../lib/measurement.h"
 
-#pragma printf = "%d"
+#pragma printf = "%d %f"
 
 void print_state_vector(complex *state_vector, int num_qubits)
 {
