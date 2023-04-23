@@ -16,5 +16,6 @@ extern sparse_element *generate_sparse_identity_matrix(unsigned int n);
 extern sparse_element *sparse_kronecker_product(sparse_element *A, unsigned int nnzA, sparse_element *B, unsigned int nnzB, unsigned int nB, unsigned int *nnzC);
 extern complex *sparse_matrix_vector_multiplication(sparse_element *A, unsigned int nnz, complex *x, unsigned int m);
 extern sparse_element *sparse_add(sparse_element* A, unsigned int nnzA, sparse_element* B, unsigned int nnzB, unsigned int *nnzC);
+extern sparse_element* sparse_multiplication(sparse_element* A, unsigned int nnzA, unsigned int rowsA, sparse_element* B, unsigned int nnzB, unsigned int colsB, unsigned int *nnzC);
 
 #endif /* SPARSE_MATRIX_H */
