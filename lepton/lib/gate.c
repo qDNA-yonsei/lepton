@@ -18,20 +18,14 @@ extern sparse_element *create_full_gate(
     unsigned char target,
     unsigned char *controls,
     unsigned char num_controls,
-    unsigned int *nnz_full_gate,
-    unsigned char current_qubit
+    unsigned int *nnz_full_gate
 );
 
 sparse_element *id(
     unsigned char num_qubits,
     unsigned int *nnz
 ) {
-    debug("id: start")
-
     *nnz = 1 << num_qubits;
-
-    debug2("id: num_qubits = %d", num_qubits)
-    debug2("id: *nnz = %d", *nnz)
 
     return generate_sparse_identity_matrix(*nnz);
 }
@@ -53,7 +47,7 @@ sparse_element *x(
     gate[1].value.real = 1.0;
     gate[1].value.imag = 0.0;
 
-    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz);
 }
 
 sparse_element *y(
@@ -73,7 +67,7 @@ sparse_element *y(
     gate[1].value.real = 0.0;
     gate[1].value.imag = 1.0;
 
-    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz);
 }
 
 sparse_element *z(
@@ -93,7 +87,7 @@ sparse_element *z(
     gate[1].value.real = -1.0;
     gate[1].value.imag = 0.0;
 
-    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz);
 }
 
 sparse_element *h(
@@ -101,8 +95,6 @@ sparse_element *h(
     unsigned char target,
     unsigned int *nnz
 ) {
-    debug("h: start")
-
     sparse_element gate[4];
 
     double z = 1/sqrt(2);
@@ -127,9 +119,7 @@ sparse_element *h(
     gate[3].value.real = -z;
     gate[3].value.imag = 0.0;
 
-    debug("h: end")
-
-    return create_full_gate(gate, 4, num_qubits, target, NULL, 0, nnz, 0);
+    return create_full_gate(gate, 4, num_qubits, target, NULL, 0, nnz);
 }
 
 
@@ -174,7 +164,7 @@ sparse_element *rz(
     gate[1].value = *value;
     free(value);
 
-    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, NULL, 0, nnz);
 }
 
 
@@ -223,7 +213,7 @@ sparse_element *u(
     gate[3].value = *value;
     free(value);
 
-    return create_full_gate(gate, 4, num_qubits, target, NULL, 0, nnz, 0);
+    return create_full_gate(gate, 4, num_qubits, target, NULL, 0, nnz);
 }
 
 
@@ -249,7 +239,7 @@ sparse_element *cx(
     unsigned char controls[1];
     controls[0] = control;
 
-    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz);
 }
 
 sparse_element *cy(
@@ -274,7 +264,7 @@ sparse_element *cy(
     unsigned char controls[1];
     controls[0] = control;
 
-    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz);
 }
 
 sparse_element *cz(
@@ -299,7 +289,26 @@ sparse_element *cz(
     unsigned char controls[1];
     controls[0] = control;
 
-    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz);
+}
+
+sparse_element *swap(
+    unsigned char num_qubits,
+    unsigned char target,
+    unsigned char control,
+    unsigned int *nnz
+) {
+    unsigned int rows = 1 << num_qubits;
+    unsigned int nnzCx;
+    sparse_element *gate1 = cx(num_qubits, target, control, &nnzCx);
+    sparse_element *gate2 = cx(num_qubits, control, target, &nnzCx);
+    sparse_element *gate3 = sparse_multiplication(gate2, nnzCx, rows, gate1, nnzCx, rows, nnz);
+    free(gate2);
+    gate2 = sparse_multiplication(gate1, nnzCx, rows, gate3, *nnz, rows, nnz);
+    free(gate1);
+    free(gate3);
+    
+    return gate2;
 }
 
 sparse_element *ccx(
@@ -308,8 +317,7 @@ sparse_element *ccx(
     unsigned char control1,
     unsigned char control2,
     unsigned int *nnz
-)
-{
+) {
     sparse_element gate[2];
 
     gate[0].row = 0;
@@ -326,7 +334,7 @@ sparse_element *ccx(
     controls[0] = control1;
     controls[1] = control2;
 
-    return create_full_gate(gate, 2, num_qubits, target, controls, 2, nnz, 0);
+    return create_full_gate(gate, 2, num_qubits, target, controls, 2, nnz);
 }
 
 sparse_element *zero()
@@ -354,6 +362,80 @@ sparse_element *one()
 }
 
 
+sparse_element *recursive_gate(
+    sparse_element *gate,
+    unsigned int nnz_gate,
+    unsigned char num_qubits,
+    unsigned char target,
+    unsigned char *controls,
+    unsigned char *control_state,
+    unsigned char num_controls,
+    unsigned int *nnz_full_gate,
+    unsigned char current_qubit
+) {
+    if (current_qubit >= num_qubits) {
+        // Ends recursion.
+        *nnz_full_gate = 1;
+        return generate_sparse_identity_matrix(1);
+    }
+
+    sparse_element *full_gate;
+    sparse_element *next_gate;
+    unsigned int nnz_next_gate;
+
+    next_gate = recursive_gate(
+        gate, nnz_gate, num_qubits, target, controls, control_state, num_controls, &nnz_next_gate, current_qubit + 1
+    );
+
+    if (current_qubit == target) {
+        full_gate = sparse_kronecker_product(
+            gate, nnz_gate, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
+        );
+    } else {
+        unsigned char i;
+        for (i = 0; i < num_controls; i++) {
+            if (current_qubit == controls[i]) {
+                sparse_element *projector;
+                if (control_state[i] == 0) { 
+                    projector = zero();
+                } else {
+                    projector = one();
+                }
+
+                full_gate = sparse_kronecker_product(
+                    projector, 1, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
+                );
+
+                free(projector);
+
+                break;
+            }
+        }
+        if (i >= num_controls) {
+            unsigned int nnz_id_gate;
+            sparse_element *id_gate = id(1, &nnz_id_gate);
+            full_gate = sparse_kronecker_product(
+                id_gate, 2, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
+            );
+            free(id_gate);
+        }
+    }
+
+    free(next_gate);
+
+    return full_gate;
+}
+
+unsigned char *itob(unsigned char const size, unsigned int const *b)
+{
+    unsigned char *bits = (unsigned char*)malloc(size * sizeof(unsigned char));
+
+    for (int j = size-1; j >= 0; j--) {
+        bits[j] = (b[0] >> j) & 1;
+    }
+
+    return bits;
+}
 
 sparse_element *create_full_gate(
     sparse_element *gate,
@@ -362,80 +444,40 @@ sparse_element *create_full_gate(
     unsigned char target,
     unsigned char *controls,
     unsigned char num_controls,
-    unsigned int *nnz_full_gate,
-    unsigned char current_qubit
-)
-{
-    debug("create_full_gate: start")
-
-    if (current_qubit >= num_qubits) {
-        *nnz_full_gate = 1;
-        debug("create_full_gate: end recursion")
-        return generate_sparse_identity_matrix(1);
-    }
-
+    unsigned int *nnz_full_gate
+) {
     sparse_element *full_gate;
-    sparse_element *next_gate;
-    unsigned int nnz_next_gate;
 
-    next_gate = create_full_gate(
-        gate, nnz_gate, num_qubits, target, controls, num_controls, &nnz_next_gate, current_qubit + 1
-    );
-
-    if (current_qubit == target) {
-        debug("create_full_gate: target")
-        full_gate = sparse_kronecker_product(
-            gate, nnz_gate, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
+    if (num_controls == 0) {
+        full_gate = recursive_gate(
+            gate, nnz_gate, num_qubits, target, NULL, NULL, num_controls, nnz_full_gate, 0
         );
-    } else {
-        debug("create_full_gate: target else")
-        unsigned char i;
-        unsigned int nnz_id_gate;
-        sparse_element *id_gate = id(1, &nnz_id_gate);
-        for (i = 0; i < num_controls; i++) {
-            if (current_qubit == controls[i]) {
-                debug("create_full_gate: control")
-
-                sparse_element *partial_gate_1;
-                sparse_element *partial_gate_2;
-                unsigned int nnz_partial_gate_1;
-                unsigned int nnz_partial_gate_2;
-
-                sparse_element *one_matrix = one();
-                partial_gate_1 = sparse_kronecker_product(
-                    one_matrix, 1, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), &nnz_partial_gate_1
-                );
-                free(next_gate);
-                free(one_matrix);
-
-                sparse_element *zero_matrix = zero();
-                next_gate = create_full_gate(
-                    id_gate, 2, num_qubits, target, NULL, 0, &nnz_next_gate, current_qubit + 1
-                );
-                partial_gate_2 = sparse_kronecker_product(
-                    zero_matrix, 1, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), &nnz_partial_gate_2
-                );
-                full_gate = sparse_add(
-                    partial_gate_1, nnz_partial_gate_1, partial_gate_2, nnz_partial_gate_2, nnz_full_gate
-                );
-                free(partial_gate_1);
-                free(partial_gate_2);
-                free(zero_matrix);
-
-                break;
-            }
-        }
-        if (i >= num_controls) {
-            debug("create_full_gate: id")
-            full_gate = sparse_kronecker_product(
-                id_gate, 2, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
-            );
-        }
     }
+    else {
+        unsigned int num_partial_states = (1 << num_controls) - 1;
+        unsigned char *ctrl_state = itob(num_controls, &num_partial_states);
 
-    free(next_gate);
+        full_gate = recursive_gate(
+            gate, nnz_gate, num_qubits, target, controls, ctrl_state, num_controls, nnz_full_gate, 0
+        );
 
-    debug("create_full_gate: end")
+        unsigned int nnz_partial_gate;
+        unsigned int nnz_id_gate;
+        sparse_element *partial_gate;
+        sparse_element *temp_gate;
+        sparse_element *id_gate = id(1, &nnz_id_gate);
+
+        for (unsigned int i = 0; i < num_partial_states; i++) {
+            ctrl_state = itob(num_controls, &i);
+            partial_gate = recursive_gate(
+                id_gate, 2, num_qubits, target, controls, ctrl_state, num_controls, &nnz_partial_gate, 0
+            );
+            temp_gate = sparse_add(full_gate, *nnz_full_gate, partial_gate, nnz_partial_gate, nnz_full_gate);
+            free(partial_gate);
+            free(full_gate);
+            full_gate = temp_gate;
+        }
+    } 
 
     return full_gate;
 }
