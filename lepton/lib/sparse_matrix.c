@@ -11,7 +11,7 @@ void print_sparse_matrix(sparse_element *A, unsigned int nnz)
 {
     for (unsigned int i = 0; i < nnz; i++) {
         printf(
-            "(%d, %d): %.2f + %.2fi\n",
+            "(%d, %d): %f + %fi\n",
             A[i].row, A[i].col, A[i].value.real, A[i].value.imag
         );
     }
@@ -206,6 +206,61 @@ sparse_element *sparse_add(
 
     // Reallocate memory for result matrix C to minimize memory usage
     C = (sparse_element*)realloc(C, k * sizeof(sparse_element));
+
+    return C;
+}
+
+sparse_element* sparse_multiplication(
+    sparse_element* A,
+    unsigned int nnzA,
+    unsigned int rowsA,
+    sparse_element* B,
+    unsigned int nnzB,
+    unsigned int colsB,
+    unsigned int *nnzC
+)
+{
+    // Create the result matrix as a dynamic array
+    sparse_element* C = (sparse_element*) malloc((nnzA * nnzB) * sizeof(sparse_element));
+
+    *nnzC = 0;
+
+    complex sum, *mult;
+    // Loop over each row of A
+    for (unsigned int i = 0; i < rowsA; i++) {
+        // Loop over each column of B
+        for (unsigned int j = 0; j < colsB; j++) {
+            sum.real = 0.0;
+            sum.imag = 0.0;
+            
+            // Loop over each non-zero element of row i of A and column j of B
+            for (unsigned int k = 0; k < nnzA; k++) {
+                if (A[k].row == i) {
+                    // Search for the matching element in B
+                    for (unsigned int l = 0; l < nnzB; l++) {
+                        if (B[l].col == j && A[k].col == B[l].row) {
+                            // Multiply the two matching elements
+                            mult = multiply_complex(A[k].value, B[l].value);
+                            sum.real += mult->real;
+                            sum.imag += mult->imag;
+                            free(mult);
+                        }
+                    }
+                }
+            }
+
+            // If the sum is not zero, add the new element to C
+            if (sum.real != 0.0 || sum.imag != 0.0) {
+                C[*nnzC].row = i;
+                C[*nnzC].col = j;
+                C[*nnzC].value = sum;
+                (*nnzC)++;
+            }
+        }
+    }
+
+    // Reallocate the C array to the correct size and return
+    C = (sparse_element*)realloc(C, (*nnzC) * sizeof(sparse_element));
 
     return C;
 }
