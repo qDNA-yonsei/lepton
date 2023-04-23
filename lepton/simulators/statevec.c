@@ -216,7 +216,12 @@ complex *parse_qasm(
                 free(state_vector);
                 state_vector = temp_state;
             }
-            else if (strcmp(instruction, "cx") == 0 || strcmp(instruction, "cz") == 0) {
+            else if (
+                strcmp(instruction, "cx") == 0 ||
+                strcmp(instruction, "cy") == 0 ||
+                strcmp(instruction, "cz") == 0 ||
+                strcmp(instruction, "swap") == 0
+            ) {
                 debug("parse_qasm: two-qubit")
 
                 // Two-qubit instruction
@@ -226,10 +231,18 @@ complex *parse_qasm(
                 sparse_element *gate;
 
                 if (strcmp(instruction, "cx") == 0) {
+                    debug("parse_qasm: cx")
                     gate = cx(*num_qubits, qubit_target, qubit_control1, &nnz);
+                }
+                else if (strcmp(instruction, "cy") == 0) {
+                    gate = cy(*num_qubits, qubit_target, qubit_control1, &nnz);
                 }
                 else if (strcmp(instruction, "cz") == 0) {
                     gate = cz(*num_qubits, qubit_target, qubit_control1, &nnz);
+                }
+                else if (strcmp(instruction, "swap") == 0) {
+                    debug("parse_qasm: swap")
+                    gate = swap(*num_qubits, qubit_target, qubit_control1, &nnz);
                 }
 
                 complex *temp_state;
@@ -282,10 +295,8 @@ complex *parse_qasm(
                         gate = z(*num_qubits, qubit_target, &nnz);
                     }
                     else if (strcmp(instruction, "h") == 0) {
-                        debug("parse_qasm: h")
                         debug2("parse_qasm: h : num_qubits = %d", *num_qubits)
                         debug2("parse_qasm: h : qubit_target = %d", qubit_target)
-                        debug2("parse_qasm: h : &nnz = %d", &nnz)
 
                         gate = h(*num_qubits, qubit_target, &nnz);
                     }
