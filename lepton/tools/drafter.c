@@ -99,13 +99,26 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
                     qubit_offsets[qubit] = max_offset + 2;
                 }
             }
-            else if (strcmp(instruction, "cx") == 0 || strcmp(instruction, "cz") == 0) {
+            else if (
+                strcmp(instruction, "cx") == 0 ||
+                strcmp(instruction, "cy") == 0 ||
+                strcmp(instruction, "cz") == 0 ||
+                strcmp(instruction, "swap") == 0
+            ) {
                 // Two-qubit instruction
                 sscanf(line, "%s q[%d], q[%d]", instruction, &qubit_control1, &qubit_target);
 
                 char target_symbol = 'x';
+                char control_symbol = 'o';
                 if (strcmp(instruction, "cz") == 0) {
                     target_symbol = 'o';
+                }
+                else if (strcmp(instruction, "cy") == 0) {
+                    target_symbol = 'y';
+                }
+                else if (strcmp(instruction, "swap") == 0) {
+                    target_symbol = 'X';
+                    control_symbol = 'X';
                 }
 
                 unsigned char row_control = qubit_control1 * 2;
@@ -115,7 +128,7 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
 
                 unsigned char col = (col_control > col_target) ? col_control + 1 : col_target + 1;
 
-                circuit[row_control][col] = 'o';
+                circuit[row_control][col] = control_symbol;
                 circuit[row_target][col] = target_symbol;
 
                 unsigned char qubit_max = (qubit_control1 < qubit_target) ? qubit_target : qubit_control1;
