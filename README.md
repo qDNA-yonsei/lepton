@@ -7,6 +7,11 @@ Secondly, it is optimized to run efficiently on small devices, including 8-bit c
 
 Although it is not intended to replace existing quantum simulation libraries, such as Qiskit or Pennylane, Lepton offers a unique approach to quantum simulation that is both accessible and efficient.
 
+## Demo
+Lepton is shown operating on an MSX1 computer with 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems.
+
+https://user-images.githubusercontent.com/33506768/234172420-bf7bd5e7-f6d1-4174-92bc-ffc53ac2f1f3.mp4
+
 ## Importance of quantum computing simulators
 Quantum computing simulators play a critical role in the development and implementation of practical quantum computing applications. These software programs simulate the behavior of quantum systems, providing researchers and engineers with a controlled environment to experiment with and validate quantum algorithms and circuits.
 
