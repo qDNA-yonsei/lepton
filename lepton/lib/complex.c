@@ -70,17 +70,13 @@ complex *divide_complex(complex a, complex b)
 // Absolute value (or modulus or magnitude) of a complex number
 double complex_abs(complex a)
 {
-    double b;
-    b = sqrt(a.real * a.real + a.imag * a.imag);
-    return b;
+    return sqrt(a.real * a.real + a.imag * a.imag);
 }
 
 // Argument (or phase) of a complex number
 double complex_arg(complex a)
 {
-    double b;
-    b = atan2(a.imag, a.real);
-    return b;
+    return atan2(a.imag, a.real);
 }
 
 // Complex conjugate
