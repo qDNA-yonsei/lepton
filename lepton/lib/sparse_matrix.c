@@ -9,11 +9,14 @@
  */
 void print_sparse_matrix(sparse_element *A, unsigned int nnz)
 {
-    for (unsigned int i = 0; i < nnz; i++) {
+    sparse_element* A_ptr = A;
+    sparse_element* A_ptr_max = A + nnz;
+    while (A_ptr < A_ptr_max) {
         printf(
             "(%d, %d): %f + %fi\n",
-            A[i].row, A[i].col, A[i].value.real, A[i].value.imag
+            A_ptr->row, A_ptr->col, A_ptr->value.real, A_ptr->value.imag
         );
+        A_ptr++;
     }
 }
 
@@ -26,11 +29,16 @@ sparse_element *generate_sparse_identity_matrix(unsigned int n)
 {
     sparse_element *A = (sparse_element*)malloc(n * sizeof(sparse_element));
 
-    for (unsigned int i = 0; i < n; i++) {
-        A[i].row = i;
-        A[i].col = i;
-        A[i].value.real = 1.0;
-        A[i].value.imag = 0.0;
+    unsigned int i = 0;
+    sparse_element* A_ptr = A;
+    sparse_element* A_ptr_max = A + n;
+    while (A_ptr < A_ptr_max) {
+        A_ptr->row = i;
+        A_ptr->col = i;
+        A_ptr->value.real = 1.0;
+        A_ptr->value.imag = 0.0;
+        A_ptr++;
+        i++;
     }
 
     return A;
@@ -59,31 +67,25 @@ sparse_element *sparse_kronecker_product(
     *nnzC = nnzA * nnzB;
 
     sparse_element* C = (sparse_element*)malloc((*nnzC) * sizeof(sparse_element));
-
-    unsigned int i, j, k = 0;
-    unsigned int rowA, colA;
-    unsigned int rowB, colB;
-    unsigned int rowC, colC;
-    complex valueA, valueB, *valueC;
-    for (i = 0; i < nnzA; i++) {
-        rowA = A[i].row;
-        colA = A[i].col;
-        valueA = A[i].value;
-        for (j = 0; j < nnzB; j++) {
-            rowB = B[j].row;
-            colB = B[j].col;
-
-            valueB = B[j].value;
-            rowC = rowA * nB + rowB;
-            colC = colA * nB + colB;
-
-            valueC = multiply_complex(valueA, valueB);
-            C[k].row = rowC;
-            C[k].col = colC;
-            C[k].value = *valueC;
+    
+    complex *valueC;
+    sparse_element* A_ptr = A;
+    sparse_element* A_ptr_max = A + nnzA;
+    sparse_element* B_ptr;
+    sparse_element* B_ptr_max = B + nnzB;
+    sparse_element* C_ptr = C;
+    while (A_ptr < A_ptr_max) {
+        B_ptr = B;
+        while (B_ptr < B_ptr_max) {
+            valueC = multiply_complex(A_ptr->value, B_ptr->value);
+            C_ptr->row = A_ptr->row * nB + B_ptr->row;
+            C_ptr->col = A_ptr->col * nB + B_ptr->col;
+            C_ptr->value = *valueC;
             free(valueC);
-            k++;
+            B_ptr++;
+            C_ptr++;
         }
+        A_ptr++;
     }
 
     return C;
@@ -107,17 +109,24 @@ complex *sparse_matrix_vector_multiplication(
 {
     unsigned int i;
     complex* y = (complex*)malloc(m * sizeof(complex));
-    for (i = 0; i < m; i++) {
-        y[i].real = 0;
-        y[i].imag = 0;
+    
+    complex* y_ptr = y;
+    complex* y_ptr_max = y + m;
+    while (y_ptr < y_ptr_max) {
+        y_ptr->real = 0;
+        y_ptr->imag = 0;
+        y_ptr++;
     }
 
     unsigned int row, col;
     complex value, *mult, *add;
-    for (i = 0; i < nnz; i++) {
-        row = A[i].row;
-        col = A[i].col;
-        value = A[i].value;
+    sparse_element* A_ptr = A;
+    sparse_element* A_ptr_max = A + nnz;
+    while (A_ptr < A_ptr_max) {
+        row = A_ptr->row;
+        col = A_ptr->col;
+        value = A_ptr->value;
+        A_ptr++;
 
         mult = multiply_complex(value, x[col]);
         add = add_complex(y[row], *mult);
@@ -151,65 +160,67 @@ sparse_element *sparse_add(
     sparse_element* C = (sparse_element*)malloc((nnzA + nnzB) * sizeof(sparse_element));
 
     // initialize pointers for iterating through the three matrices
-    unsigned int i = 0, j = 0, k = 0;
-    complex *add;
-
+    unsigned int i = 0, j = 0;
+    complex* add;
+    sparse_element* C_ptr = C;
     // loop through both matrices
     while (i < nnzA && j < nnzB) {
         // if the indices match, add the values and store in the result matrix
         if (A[i].row == B[j].row && A[i].col == B[j].col) {
-            C[k].row = A[i].row;
-            C[k].col = A[i].col;
+            C_ptr->row = A[i].row;
+            C_ptr->col = A[i].col;
             add = add_complex(A[i].value, B[j].value);
-            C[k].value = *add;
+            C_ptr->value = *add;
             free(add);
             i++;
             j++;
-            k++;
         }
         // if the row indices don't match, move the pointer of the matrix with the smaller row index
         else if (A[i].row < B[j].row) {
-            C[k].row = A[i].row;
-            C[k].col = A[i].col;
-            C[k].value = A[i].value;
+            *C_ptr = A[i];
             i++;
-            k++;
         }
         else {
-            C[k].row = B[j].row;
-            C[k].col = B[j].col;
-            C[k].value = B[j].value;
+            *C_ptr = B[j];
             j++;
-            k++;
         }
+        C_ptr++;
     }
 
     // add any remaining elements in A
     while (i < nnzA) {
-        C[k].row = A[i].row;
-        C[k].col = A[i].col;
-        C[k].value = A[i].value;
+        *C_ptr = A[i];
         i++;
-        k++;
+        C_ptr++;
     }
 
     // add any remaining elements in B
     while (j < nnzB) {
-        C[k].row = B[j].row;
-        C[k].col = B[j].col;
-        C[k].value = B[j].value;
+        *C_ptr = B[j];
         j++;
-        k++;
+        C_ptr++;
     }
 
-    *nnzC = k;
+    *nnzC = C_ptr - C;
 
     // Reallocate memory for result matrix C to minimize memory usage
-    C = (sparse_element*)realloc(C, k * sizeof(sparse_element));
+    C = (sparse_element*)realloc(C, (*nnzC) * sizeof(sparse_element));
 
     return C;
 }
 
+/** @brief Multiply two sparse matrices.
+ *
+ *  @param A Sparse complex matrix.
+ *  @param nnzA Number of non-zero elements in spase matrix A.
+ *  @param rowsA Number of rows of matrix A.
+ *  @param B Sparse complex matrix.
+ *  @param nnzB Number of non-zero elements in spase matrix B.
+ *  @param colsB Number of cols of matrix B.
+ *  @param nnzC Number of non-zero elements in the new spase matrix C.
+ *
+ *  @return Sparse complex matrix of size nnzC.
+ */
 sparse_element* sparse_multiplication(
     sparse_element* A,
     unsigned int nnzA,
@@ -223,41 +234,51 @@ sparse_element* sparse_multiplication(
     // Create the result matrix as a dynamic array
     sparse_element* C = (sparse_element*) malloc((nnzA * nnzB) * sizeof(sparse_element));
 
-    *nnzC = 0;
-
+    unsigned int i, j;
     complex sum, *mult;
+    sparse_element* A_ptr;
+    sparse_element* A_ptr_max = A + nnzA;
+    sparse_element* B_ptr;
+    sparse_element* B_ptr_max = B + nnzB;
+    sparse_element* C_ptr = C;
     // Loop over each row of A
-    for (unsigned int i = 0; i < rowsA; i++) {
+    for (i = 0; i < rowsA; i++) {
         // Loop over each column of B
-        for (unsigned int j = 0; j < colsB; j++) {
+        for (j = 0; j < colsB; j++) {
             sum.real = 0.0;
             sum.imag = 0.0;
-            
+
+            A_ptr = A;
             // Loop over each non-zero element of row i of A and column j of B
-            for (unsigned int k = 0; k < nnzA; k++) {
-                if (A[k].row == i) {
+            while (A_ptr < A_ptr_max) {
+                if (A_ptr->row == i) {
+                    B_ptr = B;
                     // Search for the matching element in B
-                    for (unsigned int l = 0; l < nnzB; l++) {
-                        if (B[l].col == j && A[k].col == B[l].row) {
+                    while (B_ptr < B_ptr_max) {
+                        if (B_ptr->col == j && A_ptr->col == B_ptr->row) {
                             // Multiply the two matching elements
-                            mult = multiply_complex(A[k].value, B[l].value);
+                            mult = multiply_complex(A_ptr->value, B_ptr->value);
                             sum.real += mult->real;
                             sum.imag += mult->imag;
                             free(mult);
                         }
+                        B_ptr++;
                     }
                 }
+                A_ptr++;
             }
 
             // If the sum is not zero, add the new element to C
             if (sum.real != 0.0 || sum.imag != 0.0) {
-                C[*nnzC].row = i;
-                C[*nnzC].col = j;
-                C[*nnzC].value = sum;
-                (*nnzC)++;
+                C_ptr->row = i;
+                C_ptr->col = j;
+                C_ptr->value = sum;
+                C_ptr++;
             }
         }
     }
+
+    *nnzC = C_ptr - C;
 
     // Reallocate the C array to the correct size and return
     C = (sparse_element*)realloc(C, (*nnzC) * sizeof(sparse_element));
