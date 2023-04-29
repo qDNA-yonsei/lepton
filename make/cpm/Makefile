@@ -12,13 +12,13 @@ build:
 	@echo "Processing ... !"
 	@mkdir -p $(BIN)
 	@rm -f $(BIN)/*.com $(BIN)/*.o
-	@zcc +cpm -c $(LIB)/complex.c -o $(BIN)/complex.o -lm
-	@zcc +cpm -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o -lm
-	@zcc +cpm -c $(LIB)/measurement.c -o $(BIN)/measurement.o -lm
-	@zcc +cpm -c $(LIB)/gate.c -o $(BIN)/gate.o -lm
-	@zcc +cpm $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/sim_bell.com -lm -DAMALLOC -lndos
+	@zcc +cpm -c $(LIB)/complex.c -o $(BIN)/complex.o
+	@zcc +cpm -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o
+	@zcc +cpm -c $(LIB)/measurement.c -o $(BIN)/measurement.o
+	@zcc +cpm -c $(LIB)/gate.c -o $(BIN)/gate.o
+	@zcc +cpm $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/sim_bell.com -lmath48 -DAMALLOC -lndos
 	@zcc +cpm -o $(BIN)/drafter.com $(TOOLS)/drafter.c
-	@zcc +cpm $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec.com -lm -DAMALLOC
+	@zcc +cpm $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec.com -lmath48 -DAMALLOC
 
 clean:
 	@rm -f $(BIN)/*.c $(BIN)/*.h $(BIN)/*.o

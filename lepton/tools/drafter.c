@@ -13,7 +13,7 @@
 #define MAX_GATE_NAME_LEN 8
 
 #ifdef __Z88DK
-    #define MAX_QASM_LINE_LEN 64
+    #define MAX_QASM_LINE_LEN 128
     #define MAX_QUBITS 16
     #define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
     #define CIRCUIT_DEPTH 128
@@ -25,9 +25,9 @@
 #endif
 
 const char *presentation =
-    "DRAFTER version 0.0.1\n"
+    "DRAFTER version 0.0.2\n"
     "ASCII art of circuit diagrams\n"
-    "By github.com/qDNA-yonsei/lepton, 2023\n"
+    "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
 
 const char *usage =
@@ -39,6 +39,7 @@ const char *usage =
     "/h: This help.\n";
 
 const char* invalid_parameter = "Invalid parameter(s)\n";
+const char* invalid_num_qubits = "Num. of qubits %d exceeded the max. %d\n";
 
 // Parse a QASM file and store the circuit in a 2D array of characters
 void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH])
@@ -76,6 +77,12 @@ void parse_qasm(const char* filename, char circuit[CIRCUIT_WIDTH][CIRCUIT_DEPTH]
             }
             else if (strcmp(instruction, "qreg") == 0) {
                 sscanf(line, "%s q[%d]", instruction, &num_qubits);
+
+                if (num_qubits > MAX_QUBITS) {
+                    printf(invalid_num_qubits, num_qubits, MAX_QUBITS);
+                    fclose(file);
+                    exit(EXIT_FAILURE);
+                }
             }
             else if (strcmp(instruction, "creg") == 0) {
                 /* code */
