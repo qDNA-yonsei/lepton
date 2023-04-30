@@ -1,16 +1,14 @@
 # Lepton
-Lepton is an educational collection of quantum simulators designed to run on small devices.
-
-Lepton's simulators are designed for small devices, with two key objectives.
-Firstly, it aims to be didactic by providing complete access to all mathematical routines and simulation steps in its easy-to-read source code.
-Secondly, it is optimized to run efficiently on small devices, including 8-bit computers. Keeping a small device as a baseline can help ensure that the code remains simple and efficient.
+Lepton is an educational quantum simulator designed to run on small devices with two key objectives. Firstly, it aims to be didactic by providing complete access to all mathematical routines and simulation steps in its easy-to-read source code. Secondly, it is optimized to run efficiently on small devices, including 8-bit computers. Keeping a small device as a baseline can help ensure that the code remains simple and efficient.
 
 Although it is not intended to replace existing quantum simulation libraries, such as Qiskit or Pennylane, Lepton offers a unique approach to quantum simulation that is both accessible and efficient.
 
 ## Demo
-Lepton is shown operating on an MSX1 computer with 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems.
+Lepton is shown operating on an MSX1 computer with a Zilog Z80 CPU running at 3.58 MHz and 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems.
 
 https://user-images.githubusercontent.com/33506768/234172420-bf7bd5e7-f6d1-4174-92bc-ffc53ac2f1f3.mp4
+
+The video is also accessible on the [YouTube platform](https://youtu.be/2BQv1TSv4n4).
 
 ## Importance of quantum computing simulators
 Quantum computing simulators play a critical role in the development and implementation of practical quantum computing applications. These software programs simulate the behavior of quantum systems, providing researchers and engineers with a controlled environment to experiment with and validate quantum algorithms and circuits.
