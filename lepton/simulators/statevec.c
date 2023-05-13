@@ -367,7 +367,7 @@ int main(int argc, char** argv)
                 return 0;
             }
             else if(param_letter == 'v') {
-                show_state_vector = argv[param][2];
+                show_state_vector = atoi(argv[param]+2);
             }
             else if(param_letter == 'm') {
                 shots = atoi(argv[param]+2);
@@ -417,7 +417,7 @@ int main(int argc, char** argv)
         }
 
         if (verbose) {
-            printf("Estimated expectation value: ");
+            printf("Sampling average: ");
         }
         debug2("main: outcome = %d", outcome)
         printf("%f\n", ((double)outcome) / shots);
