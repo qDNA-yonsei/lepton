@@ -409,18 +409,22 @@ int main(int argc, char** argv)
     if (shots > 0) {
         debug2("main: shots : shots = %d", shots)
         debug2("main: shots : num_qubits_to_measure = %d", num_qubits_to_measure)
-        unsigned int outcome = 0;
-
+        
         srand((unsigned int)clock());
-        for (unsigned int i = 0; i < shots; i++) {
-            outcome += measure(state_vector, num_qubits, qubits_to_measure, num_qubits_to_measure, 0);
-        }
-
+        double outcome = measure(
+            state_vector,
+            num_qubits,
+            qubits_to_measure,
+            num_qubits_to_measure,
+            shots, 
+            0
+        );
+        
         if (verbose) {
             printf("Sampling average: ");
         }
-        debug2("main: outcome = %d", outcome)
-        printf("%f\n", ((double)outcome) / shots);
+        debug2("main: outcome = %f", outcome)
+        printf("%f\n", outcome);
     }
 
     return 0;
