@@ -89,14 +89,14 @@ int main(int argc, char *argv[], char *envv[])
     qubits_to_measure[1] = 1;
 
     srand((unsigned int)clock());
-    int outcome = measure(current_state, 2, qubits_to_measure, 2, 1);
+    double outcome = measure(current_state, 2, qubits_to_measure, 2, 1, 1);
 
     /* Print state vector after the measurement. */
     printf("State vector after the measurement:\n");
     print_state_vector(current_state, 2);
     printf("\n");
 
-    printf("Measurement outcome: %d\n", outcome);
+    printf("Measurement outcome: %d\n", (unsigned int)outcome);
 
     return 0;
 }
