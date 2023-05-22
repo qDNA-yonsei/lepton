@@ -3,13 +3,11 @@
 #include <math.h>
 #include "measurement.h"
 
-double measure(
+double* measurement_probabilities(
     complex *state_vector,
     unsigned char num_qubits,
     unsigned char *qubits_to_measure,
-    unsigned char num_qubits_to_measure,
-    unsigned int shots,
-    char trace_out
+    unsigned char num_qubits_to_measure
 )
 {
     unsigned int i, j;
@@ -35,61 +33,88 @@ double measure(
         probs[idx] += prob;
     }
 
-    shots = (shots < 1) ? 1 : shots;
+    return probs;
+}
+
+unsigned int* measurement_counts(
+    double* probabilities,
+    unsigned char num_qubits_measured,
+    unsigned int shots
+)
+{
+    unsigned int i, j;
+    unsigned int length_measure = 1 << num_qubits_measured;
+
+    unsigned int* counts = (unsigned int*)malloc(sizeof(unsigned int) * length_measure);
+    for (i = 0; i < length_measure; i++) {
+        counts[i] = 0;
+    }
 
     /* Randomly select a state based on the probabilities. */
     double* probs_ptr;
     double rand_val;
     double cum_prob;
-    unsigned int measured_state = 0;
     for (j = 0; j < shots; j++) {
         rand_val = ((double)rand() / RAND_MAX);
         cum_prob = 0.0;
-        probs_ptr = probs;
+        probs_ptr = probabilities;
         for (i = 0; i < length_measure; i++) {
             cum_prob += *probs_ptr++;
             if (rand_val <= cum_prob) {
-                measured_state += i;
+                counts[i] += 1;
                 break;
             }
         }
     }
-    double sampling_average = ((double)measured_state) / shots;
-    measured_state = i; // last measured state.
+    
+    return counts;
+}
 
-    /*
-    * Update the state vector based on the last measurement
-    * (partial trace or tracing out).
-    */
-    if (trace_out) {
-        for (i = 0; i < length_state; i++) {
-            for (j = 0; j < num_qubits_to_measure; j++){
-                if (
-                    ((i >> qubits_to_measure[j]) & 1) !=
-                    ((measured_state >> j) & 1)
-                ) {
-                    state_vector[i].real = 0.0;
-                    state_vector[i].imag = 0.0;
-                    break;
-                }
-            }
-        }
-        complex normalization_factor;
-        normalization_factor.real = 0.0;
-        normalization_factor.imag = 0.0;
-        for (i = 0; i < length_state; i++) {
-            normalization_factor.real += pow(complex_abs(state_vector[i]), 2);
-        }
-        normalization_factor.real = sqrt(normalization_factor.real);
-        complex *div;
-        for (i = 0; i < length_state; i++) {
-            div = divide_complex(state_vector[i], normalization_factor);
-            state_vector[i] = *div;
-            free(div);
-        }
+complex* measurement_postselection(
+    unsigned int measured_state,
+    complex *state_vector,
+    unsigned char num_qubits,
+    unsigned char *qubits_to_measure,
+    unsigned char num_qubits_to_measure
+)
+{
+    unsigned int i, j;
+    unsigned int length_measure = 1 << num_qubits_to_measure;
+    unsigned int length_state = 1 << num_qubits;
+
+    complex* updated_vector = (complex*)malloc(sizeof(complex) * length_measure);
+    for (i = 0; i < length_measure; i++) {
+        updated_vector[i] = state_vector[i];
     }
 
-    /* Free allocated memory and return the measured state. */
-    free(probs);
-    return sampling_average;
+    /*
+    * Update the state vector based on `measured_state`.
+    */
+    for (i = 0; i < length_state; i++) {
+        for (j = 0; j < num_qubits_to_measure; j++){
+            if (
+                ((i >> qubits_to_measure[j]) & 1) !=
+                ((measured_state >> j) & 1)
+            ) {
+                updated_vector[i].real = 0.0;
+                updated_vector[i].imag = 0.0;
+                break;
+            }
+        }
+    }
+    complex normalization_factor;
+    normalization_factor.real = 0.0;
+    normalization_factor.imag = 0.0;
+    for (i = 0; i < length_state; i++) {
+        normalization_factor.real += pow(complex_abs(updated_vector[i]), 2);
+    }
+    normalization_factor.real = sqrt(normalization_factor.real);
+    complex *div;
+    for (i = 0; i < length_state; i++) {
+        div = divide_complex(updated_vector[i], normalization_factor);
+        updated_vector[i] = *div;
+        free(div);
+    }
+
+    return updated_vector;
 }
