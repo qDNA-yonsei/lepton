@@ -11,16 +11,19 @@
 void print_state_vector(complex *state_vector, int num_qubits)
 {
     unsigned int length = 1 << num_qubits;
-    //printf("_standard format_\n");
     for (unsigned int i = 0; i < length; i++) {
         print_complex(state_vector[i]);
         printf("\n");
     }
-    // printf("\n_polar format_\n");
-    // for (int i = 0; i < length; i++) {
-    //     print_complex_polar(state_vector[i]);
-    //     printf("\n");
-    // }
+}
+
+void print_probabilities_vector(double *probs_vector, int num_qubits)
+{
+    unsigned int length = 1 << num_qubits;
+    for (unsigned int i = 0; i < length; i++) {
+        printf("%f", probs_vector[i]);
+        printf("\n");
+    }
 }
 
 int main(int argc, char *argv[], char *envv[])
@@ -61,7 +64,7 @@ int main(int argc, char *argv[], char *envv[])
 
     // Initialize the Hadamard gate.
     h_gate = h(2, 0, &nnzH);
-    
+
     // Initialize the X gate.
     x_gate = x(2, 0, &nnzX);
 
@@ -71,7 +74,7 @@ int main(int argc, char *argv[], char *envv[])
     current_state2 = sparse_matrix_vector_multiplication(h_gate, nnzH, current_state, 4);
     free(current_state);
     current_state = sparse_matrix_vector_multiplication(cnot_gate, nnzCx, current_state2, 4);
-    
+
     free(current_state2);
     free(cnot_gate);
     free(id_gate);
@@ -83,20 +86,46 @@ int main(int argc, char *argv[], char *envv[])
     print_state_vector(current_state, 2);
     printf("\n");
 
-    /* Perform one measurement on two qubits. */
+    /* Calculate the ideal measurement probabilities vector. */
     unsigned char *qubits_to_measure = (unsigned char*)malloc(2 * sizeof(unsigned char));
     qubits_to_measure[0] = 0;
     qubits_to_measure[1] = 1;
 
-    srand((unsigned int)clock());
-    double outcome = measure(current_state, 2, qubits_to_measure, 2, 1, 1);
+    double* probs = measurement_probabilities(current_state, 2, qubits_to_measure, 2);
 
-    /* Print state vector after the measurement. */
-    printf("State vector after the measurement:\n");
-    print_state_vector(current_state, 2);
+    /* Print ideal measurement probabilities. */
+    printf("Measurement ideal probabilities:\n");
+    print_probabilities_vector(probs, 2);
     printf("\n");
 
-    printf("Measurement outcome: %d\n", (unsigned int)outcome);
+    /* Perform one measurement on two qubits. */
+    srand((unsigned int)clock());
+    unsigned int* counts = measurement_counts(probs, 2, 1);
+    
+    /* Selects the single measurement outcome. */
+    unsigned int outcome = 0;
+    for (int i = 0; i < (1<<2); i++) {
+        if (counts[i] > 0) {
+            outcome = i;
+            break;
+        }
+    }
+
+    printf("Measurement outcome: %d\n\n", outcome);
+
+    /* Calculate the postselection state vector. */
+    complex* postselection = measurement_postselection(outcome, current_state, 2, qubits_to_measure, 2);
+
+    /* Print state vector after the postselection. */
+    printf("State vector after the postselection:\n");
+    print_state_vector(postselection, 2);
+    printf("\n");
+
+    free(current_state);
+    free(qubits_to_measure);
+    free(probs);
+    free(counts);
+    free(postselection);
 
     return 0;
 }
