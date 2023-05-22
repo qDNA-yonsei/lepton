@@ -45,9 +45,9 @@ const char *usage =
     "\n"
     "<qasm>: QASM file name.\n"
     "/v: Enable or disable printing the state vector (0|1).\n"
-    "    If <print>=1 (default), the state vector is printed.\n"
+    "    If <print>=0 (default), the state vector is not printed.\n"
     "/m: Set the number of mesurement shots (0-8192)\n"
-    "    If <shots>=0 (default), the measurement outcome is not printed.\n"
+    "    If <shots>=0 (default), the measurement counts are not printed.\n"
     "/s: Silent mode.\n"
     "    The presentation is not printed.\n"
     "/h: This help.\n";
@@ -74,6 +74,28 @@ void print_state_vector(complex *state_vector, unsigned char num_qubits)
         print_bits(num_qubits, &i);
         printf(" : ");
         print_complex(state_vector[i]);
+        printf("\n");
+    }
+}
+
+void print_probabilities_vector(double *probs_vector, unsigned int num_qubits)
+{
+    unsigned int length = 1 << num_qubits;
+    for (unsigned int i = 0; i < length; i++) {
+        print_bits(num_qubits, &i);
+        printf(" : ");
+        printf("%f", probs_vector[i]);
+        printf("\n");
+    }
+}
+
+void print_counts_vector(unsigned int *counts_vector, unsigned int num_qubits)
+{
+    unsigned int length = 1 << num_qubits;
+    for (unsigned int i = 0; i < length; i++) {
+        print_bits(num_qubits, &i);
+        printf(" : ");
+        printf("%d", counts_vector[i]);
         printf("\n");
     }
 }
@@ -127,7 +149,7 @@ complex *parse_qasm(
             }
             else if (strcmp(instruction, "measure") == 0) {
                 debug("parse_qasm: measure")
-                
+
                 sscanf(line, "%s q[%d]", instruction, &qubit_target);
 
                 qubits_to_measure[qubits_to_measure_index++] = qubit_target;
@@ -294,7 +316,7 @@ complex *parse_qasm(
 
                 // Single-qubit instruction
                 sscanf(line, "%s q[%d]", instruction, &qubit_target);
-                
+
                 debug2("parse_qasm: qubit_target = %d", qubit_target)
 
                 unsigned int nnz;
@@ -352,7 +374,7 @@ int main(int argc, char** argv)
 
     char verbose = 1;
     char param_letter;
-    char show_state_vector = 1;
+    char show_state_vector = 0;
     unsigned int shots = 0;
     const char* filename;
     for (int param = 0; param < argc; param++) {
@@ -405,26 +427,37 @@ int main(int argc, char** argv)
         printf("\n");
     }
 
-    /* Perform the measurements. */
-    if (shots > 0) {
-        debug2("main: shots : shots = %d", shots)
-        debug2("main: shots : num_qubits_to_measure = %d", num_qubits_to_measure)
-        
-        srand((unsigned int)clock());
-        double outcome = measure(
+    /* Print ideal measurement probabilities. */
+    double* probs = measurement_probabilities(
             state_vector,
             num_qubits,
             qubits_to_measure,
-            num_qubits_to_measure,
-            shots, 
-            0
+            num_qubits_to_measure
         );
-        
+
+    if (verbose) {
+        printf("Ideal measurement probabilities:\n");
+    }
+    print_probabilities_vector(probs, num_qubits_to_measure);
+
+    /* Perform the shots. */
+    if (shots > 0) {
+        debug2("main: shots : shots = %d", shots)
+        debug2("main: shots : num_qubits_to_measure = %d", num_qubits_to_measure)
+
+        /* Print measurement counts. */
+        srand((unsigned int)clock());
+        unsigned int* counts = measurement_counts(
+            probs,
+            num_qubits_to_measure,
+            shots
+        );
+
+        printf("\n");
         if (verbose) {
-            printf("Sampling average: ");
+            printf("Measurement counts:\n");
         }
-        debug2("main: outcome = %f", outcome)
-        printf("%f\n", outcome);
+        print_counts_vector(counts, num_qubits_to_measure);
     }
 
     return 0;
