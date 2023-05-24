@@ -16,8 +16,8 @@ build:
 	@zcc +cpm -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o
 	@zcc +cpm -c $(LIB)/measurement.c -o $(BIN)/measurement.o
 	@zcc +cpm -c $(LIB)/gate.c -o $(BIN)/gate.o
-	@zcc +cpm $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/sim_bell.com -lmath48 -DAMALLOC -lndos
-	@zcc +cpm -o $(BIN)/drafter.com $(TOOLS)/drafter.c
+	@zcc +cpm $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/simbell.com -lmath48 -DAMALLOC -lndos
+	@zcc +cpm $(TOOLS)/drafter.c -o $(BIN)/drafter.com -DAMALLOC
 	@zcc +cpm $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec.com -lmath48 -DAMALLOC
 
 clean:
