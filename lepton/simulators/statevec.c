@@ -436,7 +436,7 @@ int main(int argc, char** argv)
         );
 
     if (verbose) {
-        printf("Ideal measurement probabilities:\n");
+        printf("Measurement probabilities:\n");
     }
     print_probabilities_vector(probs, num_qubits_to_measure);
 
