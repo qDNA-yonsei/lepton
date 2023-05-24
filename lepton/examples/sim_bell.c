@@ -26,7 +26,7 @@ void print_probabilities_vector(double *probs_vector, int num_qubits)
     }
 }
 
-int main(int argc, char *argv[], char *envv[])
+int main(int argc, char** argv)
 {
     /*
      * Simulates a Bell state: (1/sqrt(2))*(|00>-|11>)
