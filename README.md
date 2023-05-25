@@ -7,20 +7,17 @@ Although it is not intended to replace existing quantum simulation libraries, su
 Lepton is shown operating on an MSX1 computer with a Zilog Z80 CPU running at 3.58 MHz and 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems.
 
 <p align="center">
-   https://github.com/israelferrazaraujo/lepton/assets/33506768/a8b915dd-89b7-4552-9338-ffd02fc7fce9
+   <video src="https://github.com/israelferrazaraujo/lepton/assets/33506768/a8b915dd-89b7-4552-9338-ffd02fc7fce9"></video>
 </p>
 
 Paper "Elementary gates for quantum computation":
-
-https://journals.aps.org/pra/abstract/10.1103/PhysRevA.52.3457
+[https://journals.aps.org/pra/abstract/10.1103/PhysRevA.52.3457](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.52.3457)
 
 Hotbit HB-8000 MSX computer:
-
-https://en.wikipedia.org/wiki/Hotbit
+[https://en.wikipedia.org/wiki/Hotbit](https://en.wikipedia.org/wiki/Hotbit)
 
 openMSX:
-
-https://openmsx.org/
+[https://openmsx.org/](https://openmsx.org/)
 
 ## Importance of quantum computing simulators
 Quantum computing simulators play a critical role in the development and implementation of practical quantum computing applications. These software programs simulate the behavior of quantum systems, providing researchers and engineers with a controlled environment to experiment with and validate quantum algorithms and circuits.
