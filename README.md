@@ -10,8 +10,10 @@ https://github.com/israelferrazaraujo/lepton/assets/33506768/a8b915dd-89b7-4552-
 
 Paper "Elementary gates for quantum computation":
 [https://journals.aps.org/pra/abstract/10.1103/PhysRevA.52.3457](https://journals.aps.org/pra/abstract/10.1103/PhysRevA.52.3457)
+
 Hotbit HB-8000 MSX computer:
 [https://en.wikipedia.org/wiki/Hotbit](https://en.wikipedia.org/wiki/Hotbit)
+
 openMSX:
 [https://openmsx.org/](https://openmsx.org/)
 
