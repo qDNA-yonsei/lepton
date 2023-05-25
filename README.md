@@ -6,15 +6,20 @@ Although it is not intended to replace existing quantum simulation libraries, su
 ## Demo
 Lepton is shown operating on an MSX1 computer with a Zilog Z80 CPU running at 3.58 MHz and 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems.
 
-https://github.com/israelferrazaraujo/lepton/assets/33506768/a8b915dd-89b7-4552-9338-ffd02fc7fce9
+<p align="center">
+   https://github.com/israelferrazaraujo/lepton/assets/33506768/a8b915dd-89b7-4552-9338-ffd02fc7fce9
+</p>
 
 Paper "Elementary gates for quantum computation":
+
 https://journals.aps.org/pra/abstract/10.1103/PhysRevA.52.3457
 
 Hotbit HB-8000 MSX computer:
+
 https://en.wikipedia.org/wiki/Hotbit
 
 openMSX:
+
 https://openmsx.org/
 
 ## Importance of quantum computing simulators
