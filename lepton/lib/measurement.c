@@ -26,7 +26,9 @@ double* measurement_probabilities(
     for (i = 0; i < length_state; i++) {
         idx = 0;
         for (j = 0; j < num_qubits_to_measure; j++) {
-            idx += ((i >> qubits_to_measure[j]) & 1) << j;
+            // Big-endian (bit zero - LSb - is on the left - index 0 - of the binary string).
+            // On the circuit, qubit zero is the less significant one.
+            idx += ((i >> (num_qubits-qubits_to_measure[j]-1)) & 1) << (num_qubits_to_measure-j-1);
         }
         amp = state_vector[i];
         prob = pow(complex_abs(amp), 2);
@@ -66,7 +68,7 @@ unsigned int* measurement_counts(
             }
         }
     }
-    
+
     return counts;
 }
 
@@ -93,8 +95,8 @@ complex* measurement_postselection(
     for (i = 0; i < length_state; i++) {
         for (j = 0; j < num_qubits_to_measure; j++){
             if (
-                ((i >> qubits_to_measure[j]) & 1) !=
-                ((measured_state >> j) & 1)
+                ((i >> (num_qubits-qubits_to_measure[j]-1)) & 1) !=
+                ((measured_state >> (num_qubits_to_measure-j-1)) & 1)
             ) {
                 updated_vector[i].real = 0.0;
                 updated_vector[i].imag = 0.0;

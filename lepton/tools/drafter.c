@@ -10,7 +10,7 @@
 
 #define lower_case(c) ((c) | 32)
 
-#define MAX_GATE_NAME_LEN 8
+#define MAX_GATE_NAME_LEN 32
 
 #ifdef __Z88DK
     #define MAX_QASM_LINE_LEN 128
@@ -25,7 +25,7 @@
 #endif
 
 const char *presentation =
-    "DRAFTER version 0.0.3\n"
+    "DRAFTER version 0.0.4\n"
     "ASCII art of circuit diagrams\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
@@ -161,13 +161,22 @@ void parse_qasm(const char* filename, char* circuit)
                 }
 
             }
-            else if (strcmp(instruction, "ccx") == 0) {
+            else if (
+                strcmp(instruction, "ccx") == 0 ||
+                strcmp(instruction, "cswap") == 0
+            ) {
                 // Three-qubit instruction
                 sscanf(
-                    line, "%s q[%d], q[%d], q[%d]", instruction, &qubit_control1, &qubit_control2, &qubit_target
+                    line, "%*s q[%d], q[%d], q[%d]", &qubit_control1, &qubit_control2, &qubit_target
                 );
 
                 char target_symbol = 'x';
+                char control1_symbol = 'o';
+                char control2_symbol = 'o';
+                if (strcmp(instruction, "cswap") == 0) {
+                    target_symbol = 'X';
+                    control2_symbol = 'X';
+                }
 
                 unsigned char row_control1 = qubit_control1 * 2;
                 unsigned char col_control1 = qubit_offsets[qubit_control1];
@@ -204,8 +213,8 @@ void parse_qasm(const char* filename, char* circuit)
                     circuit[(row + CIRCUIT_DEPTH) + col] = '|';
                 }
 
-                circuit[row_control1*CIRCUIT_DEPTH + col] = 'o';
-                circuit[row_control2*CIRCUIT_DEPTH + col] = 'o';
+                circuit[row_control1*CIRCUIT_DEPTH + col] = control1_symbol;
+                circuit[row_control2*CIRCUIT_DEPTH + col] = control2_symbol;
                 circuit[row_target*CIRCUIT_DEPTH + col] = target_symbol;
 
             }

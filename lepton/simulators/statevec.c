@@ -12,11 +12,14 @@
 #include "../lib/gate.h"
 #include "../lib/measurement.h"
 
+#ifdef __Z88DK
 #pragma printf = "%d %s %f"
+#pragma scanf = "%d %s %f"
+#endif
 
 #define lower_case(c) ((c) | 32)
 
-#define MAX_INSTRUCTION_LEN 8
+#define MAX_INSTRUCTION_LEN 32
 
 #ifdef __Z88DK
 #define MAX_QUBITS 8
@@ -35,7 +38,7 @@
 #endif
 
 const char *presentation =
-    "State Vector simulator version 0.0.2\n"
+    "State Vector simulator version 0.0.3\n"
     "Quantum circuit statevector simulator\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
@@ -100,6 +103,23 @@ void print_counts_vector(unsigned int *counts_vector, unsigned int num_qubits)
     }
 }
 
+void replace_char(char* str, char find, char replace){
+    char *current_pos = strchr(str,find);
+    while (current_pos) {
+        *current_pos = replace;
+        current_pos = strchr(current_pos,find);
+    }
+}
+
+void remove_char(char* str, char find) {
+    char *pr = str, *pw = str;
+    while (*pr) {
+        *pw = *pr++;
+        pw += (*pw != find);
+    }
+    *pw = '\0';
+}
+
 // Parses a QASM file and builds the corresponding quantum gates.
 complex *parse_qasm(
     const char* filename,
@@ -138,8 +158,12 @@ complex *parse_qasm(
 
     while (fgets(line, sizeof(line), file)) {
         if (strlen(line) > 6) {
+
             sscanf(line, "%s ", instruction);
-            sscanf(line, "%s(", instruction2);
+            replace_char(instruction, '(', ' ');
+            sscanf(instruction, "%s", instruction);
+
+            debug2("parse_qasm: instruction = %s", instruction)
 
             if (strcmp(instruction, "OPENQASM") == 0) {
                 /* code */
@@ -150,14 +174,16 @@ complex *parse_qasm(
             else if (strcmp(instruction, "measure") == 0) {
                 debug("parse_qasm: measure")
 
-                sscanf(line, "%s q[%d]", instruction, &qubit_target);
+                sscanf(line, "%*s q[%d]", &qubit_target);
+
+                debug2("parse_qasm: qubit_target = %d", qubit_target)
 
                 qubits_to_measure[qubits_to_measure_index++] = qubit_target;
             }
             else if (strcmp(instruction, "qreg") == 0) {
                 debug("parse_qasm: qreg")
 
-                sscanf(line, "%s q[%d]", instruction, num_qubits);
+                sscanf(line, "%*s q[%d]", num_qubits);
 
                 debug2("parse_qasm: num_qubits = %d", *num_qubits)
 
@@ -191,28 +217,35 @@ complex *parse_qasm(
                 /* code */
             }
             else if (
-                strcmp(instruction2, "rx") == 0 ||
-                strcmp(instruction2, "ry") == 0 ||
-                strcmp(instruction2, "rz") == 0 ||
-                strcmp(instruction2, "p") == 0
+                strcmp(instruction, "rx") == 0 ||
+                strcmp(instruction, "ry") == 0 ||
+                strcmp(instruction, "rz") == 0 ||
+                strcmp(instruction, "p") == 0
             ) {
                 debug("parse_qasm: parameterized single-qubit")
 
                 // Single-qubit parameterized instruction
-                sscanf(line, "%s(%s) q[%d]", instruction, instruction2, &qubit_target);
+                sscanf(line, "%s q[%d]", instruction2, &qubit_target);
+                remove_char(instruction2, ' ');
+                remove_char(instruction2, ')');
+                replace_char(instruction2, '(', ' ');
+                sscanf(instruction2, "%*s %s", instruction2);
+
+                debug2("parse_qasm: instruction = %s", instruction)
+                debug2("parse_qasm: instruction2 = %s", instruction2)
+                debug2("parse_qasm: qubit_target = %d", qubit_target)
 
                 double parameter_value;
                 double parameter_value2;
 
-                char index;
                 char *slash;
                 slash = strchr(instruction2, '/');
-                if (slash == NULL) {
-                    index = -1;
-                }
-                else {
-                    index = (char)(slash - instruction2);
-                    sscanf(instruction2, "%s/%s", instruction2, instruction3);
+                if (slash != NULL) {
+                    replace_char(instruction2, '/', ' ');
+                    sscanf(instruction2, "%s%*c%s", instruction2, instruction3);
+
+                    debug2("parse_qasm: instruction2 = %s", instruction2)
+                    debug2("parse_qasm: instruction3 = %s", instruction3)
                 }
 
                 if (strcmp(instruction2, "pi") == 0) {
@@ -222,13 +255,24 @@ complex *parse_qasm(
                     parameter_value = -M_PI;
                 }
                 else {
+                    #ifdef __Z88DK
                     sscanf(instruction2, "%f", &parameter_value);
+                    #else
+                    parameter_value = strtod(instruction2, NULL);
+                    #endif
                 }
 
-                if (index > -1) {
+                if (slash != NULL) {
+                    #ifdef __Z88DK
                     sscanf(instruction3, "%f", &parameter_value2);
+                    #else
+                    parameter_value2 = strtod(instruction3, NULL);
+                    #endif
                     parameter_value = parameter_value / parameter_value2;
                 }
+
+                debug2("parse_qasm: parameter_value = %f", parameter_value)
+                debug2("parse_qasm: parameter_value2 = %f", parameter_value2)
 
                 unsigned int nnz;
                 sparse_element *gate;
@@ -262,7 +306,7 @@ complex *parse_qasm(
                 debug2("parse_qasm: num_qubits = %d", *num_qubits)
 
                 // Two-qubit instruction
-                sscanf(line, "%s q[%d], q[%d]", instruction, &qubit_control1, &qubit_target);
+                sscanf(line, "%*s q[%d], q[%d]", &qubit_control1, &qubit_target);
 
                 debug2("parse_qasm: qubit_target = %d", qubit_target)
                 debug2("parse_qasm: qubit_control1 = %d", qubit_control1)
@@ -293,16 +337,32 @@ complex *parse_qasm(
 
                 debug("parse_qasm: end two-qubit")
             }
-            else if (strcmp(instruction, "ccx") == 0) {
+            else if (
+                strcmp(instruction, "ccx") == 0 ||
+                strcmp(instruction, "cswap") == 0
+            ) {
                 debug("parse_qasm: three-qubit")
 
                 // Three-qubit instruction
                 sscanf(
-                    line, "%s q[%d], q[%d], q[%d]", instruction, &qubit_control1, &qubit_control2, &qubit_target
+                    line, "%*s q[%d], q[%d], q[%d]", &qubit_control1, &qubit_control2, &qubit_target
                 );
 
+                debug2("parse_qasm: qubit_target = %d", qubit_target)
+                debug2("parse_qasm: qubit_control1 = %d", qubit_control1)
+                debug2("parse_qasm: qubit_control2 = %d", qubit_control2)
+
                 unsigned int nnz;
-                sparse_element *gate = ccx(*num_qubits, qubit_target, qubit_control1, qubit_control2, &nnz);
+                sparse_element *gate;
+
+                if (strcmp(instruction, "ccx") == 0) {
+                    debug("parse_qasm: ccx")
+                    gate = ccx(*num_qubits, qubit_target, qubit_control1, qubit_control2, &nnz);
+                }
+                else if (strcmp(instruction, "cswap") == 0) {
+                    debug("parse_qasm: cswap")
+                    gate = cswap(*num_qubits, qubit_control2, qubit_target, qubit_control1, &nnz);
+                }
 
                 complex *temp_state;
                 temp_state = sparse_matrix_vector_multiplication(gate, nnz, state_vector, N);
@@ -315,7 +375,7 @@ complex *parse_qasm(
                 debug2("parse_qasm: num_qubits = %d", *num_qubits)
 
                 // Single-qubit instruction
-                sscanf(line, "%s q[%d]", instruction, &qubit_target);
+                sscanf(line, "%*s q[%d]", &qubit_target);
 
                 debug2("parse_qasm: qubit_target = %d", qubit_target)
 
