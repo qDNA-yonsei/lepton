@@ -6,7 +6,9 @@
 #include "../lib/gate.h"
 #include "../lib/measurement.h"
 
+#ifdef __Z88DK
 #pragma printf = "%d %f"
+#endif
 
 void print_state_vector(complex *state_vector, int num_qubits)
 {
