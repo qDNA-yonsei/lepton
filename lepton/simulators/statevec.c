@@ -12,7 +12,10 @@
 #include "../lib/gate.h"
 #include "../lib/measurement.h"
 
+#ifdef __Z88DK
 #pragma printf = "%d %s %f"
+#pragma scanf = "%d %s %f"
+#endif
 
 #define lower_case(c) ((c) | 32)
 
@@ -252,11 +255,19 @@ complex *parse_qasm(
                     parameter_value = -M_PI;
                 }
                 else {
-                    parameter_value = strtof(instruction2, NULL);
+                    #ifdef __Z88DK
+                    sscanf(instruction2, "%f", &parameter_value);
+                    #else
+                    parameter_value = strtod(instruction2, NULL);
+                    #endif
                 }
 
                 if (slash != NULL) {
-                    parameter_value2 = strtof(instruction3, NULL);
+                    #ifdef __Z88DK
+                    sscanf(instruction3, "%f", &parameter_value2);
+                    #else
+                    parameter_value2 = strtod(instruction3, NULL);
+                    #endif
                     parameter_value = parameter_value / parameter_value2;
                 }
 
