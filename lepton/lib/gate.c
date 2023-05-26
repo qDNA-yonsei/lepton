@@ -305,15 +305,37 @@ sparse_element *cz(
 
 sparse_element *swap(
     unsigned char num_qubits,
-    unsigned char target,
+    unsigned char target1,
+    unsigned char target2,
+    unsigned int *nnz
+)
+{
+    /* https://algassert.com/post/1717 */
+    unsigned int rows = 1 << num_qubits;
+    unsigned int nnzCx;
+    sparse_element *gate1 = cx(num_qubits, target1, target2, &nnzCx);
+    sparse_element *gate2 = cx(num_qubits, target2, target1, &nnzCx);
+    sparse_element *gate3 = sparse_multiplication(gate2, nnzCx, rows, gate1, nnzCx, rows, nnz);
+    free(gate2);
+    gate2 = sparse_multiplication(gate1, nnzCx, rows, gate3, *nnz, rows, nnz);
+    free(gate1);
+    free(gate3);
+
+    return gate2;
+}
+
+sparse_element *cswap(
+    unsigned char num_qubits,
+    unsigned char target1,
+    unsigned char target2,
     unsigned char control,
     unsigned int *nnz
 )
 {
     unsigned int rows = 1 << num_qubits;
     unsigned int nnzCx;
-    sparse_element *gate1 = cx(num_qubits, target, control, &nnzCx);
-    sparse_element *gate2 = cx(num_qubits, control, target, &nnzCx);
+    sparse_element *gate1 = ccx(num_qubits, target1, control, target2, &nnzCx);
+    sparse_element *gate2 = ccx(num_qubits, target2, control, target1, &nnzCx);
     sparse_element *gate3 = sparse_multiplication(gate2, nnzCx, rows, gate1, nnzCx, rows, nnz);
     free(gate2);
     gate2 = sparse_multiplication(gate1, nnzCx, rows, gate3, *nnz, rows, nnz);
