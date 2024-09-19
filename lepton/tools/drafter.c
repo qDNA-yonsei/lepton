@@ -56,7 +56,7 @@ void parse_qasm(const char* filename, char* circuit)
 
     unsigned int qubit_target;
     unsigned int qubit_control1, qubit_control2;
-    unsigned char num_qubits = MAX_QUBITS;
+    unsigned int num_qubits = MAX_QUBITS;
     char line[MAX_QASM_LINE_LEN];
     char instruction[MAX_GATE_NAME_LEN];
 
@@ -88,13 +88,13 @@ void parse_qasm(const char* filename, char* circuit)
             }
             else if (strcmp(instruction, "barrier") == 0) {
                 unsigned char max_offset = 0;
-                for (unsigned char qubit = 0; qubit < num_qubits; qubit++) {
+                for (unsigned int qubit = 0; qubit < num_qubits; qubit++) {
                     if (qubit_offsets[qubit] > max_offset) {
                         max_offset = qubit_offsets[qubit];
                     }
                 }
                 unsigned int row;
-                for (unsigned char qubit = 0; qubit < num_qubits; qubit++) {
+                for (unsigned int qubit = 0; qubit < num_qubits; qubit++) {
                     row = qubit * 2 * CIRCUIT_DEPTH;
                     for (unsigned char col = qubit_offsets[qubit]; col <= max_offset; col++) {
                         circuit[row + col] = '-';

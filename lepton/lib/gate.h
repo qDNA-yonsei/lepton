@@ -19,26 +19,26 @@
 #define M_PI_4 0.785398163397448309616
 #endif
 
-sparse_element *id(unsigned char num_qubits, unsigned int *nnz);
+sparse_element *id(unsigned int num_qubits, unsigned int *nnz);
 
-sparse_element *x(unsigned char num_qubits, unsigned char target, unsigned int *nnz);
-sparse_element *y(unsigned char num_qubits, unsigned char target, unsigned int *nnz);
-sparse_element *z(unsigned char num_qubits, unsigned char target, unsigned int *nnz);
-sparse_element *h(unsigned char num_qubits, unsigned char target, unsigned int *nnz);
+sparse_element *x(unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *y(unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *z(unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *h(unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 
-sparse_element *rx(double theta, unsigned char num_qubits, unsigned char target, unsigned int *nnz);
-sparse_element *ry(double theta, unsigned char num_qubits, unsigned char target, unsigned int *nnz);
-sparse_element *rz(double phi, unsigned char num_qubits, unsigned char target, unsigned int *nnz);
-sparse_element *p(double lambda, unsigned char num_qubits, unsigned char target, unsigned int *nnz);
+sparse_element *rx(double theta, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *ry(double theta, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *rz(double phi, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *p(double lambda, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 
-sparse_element *u(double theta, double phi, double lambda, unsigned char num_qubits, unsigned char target, unsigned int *nnz);
+sparse_element *u(double theta, double phi, double lambda, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 
-sparse_element *cx(unsigned char num_qubits, unsigned char target, unsigned char control, unsigned int *nnz);
-sparse_element *cy(unsigned char num_qubits, unsigned char target, unsigned char control, unsigned int *nnz);
-sparse_element *cz(unsigned char num_qubits, unsigned char target, unsigned char control, unsigned int *nnz);
-sparse_element *swap(unsigned char num_qubits, unsigned char target1, unsigned char target2, unsigned int *nnz);
-sparse_element *cswap(unsigned char num_qubits, unsigned char target1, unsigned char target2, unsigned char control, unsigned int *nnz);
+sparse_element *cx(unsigned int num_qubits, unsigned int target, unsigned int control, unsigned int *nnz);
+sparse_element *cy(unsigned int num_qubits, unsigned int target, unsigned int control, unsigned int *nnz);
+sparse_element *cz(unsigned int num_qubits, unsigned int target, unsigned int control, unsigned int *nnz);
+sparse_element *swap(unsigned int num_qubits, unsigned int target1, unsigned int target2, unsigned int *nnz);
+sparse_element *cswap(unsigned int num_qubits, unsigned int target1, unsigned int target2, unsigned int control, unsigned int *nnz);
 
-sparse_element *ccx(unsigned char num_qubits, unsigned char target, unsigned char control1, unsigned char control2, unsigned int *nnz);
+sparse_element *ccx(unsigned int num_qubits, unsigned int target, unsigned int control1, unsigned int control2, unsigned int *nnz);
 
 #endif /* GATE_H */

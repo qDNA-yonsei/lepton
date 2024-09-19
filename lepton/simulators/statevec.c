@@ -123,16 +123,16 @@ void remove_char(char* str, char find) {
 // Parses a QASM file and builds the corresponding quantum gates.
 complex *parse_qasm(
     const char* filename,
-    unsigned char *num_qubits,
-    unsigned char *qubits_to_measure,
-    unsigned char *num_qubits_to_measure
+    unsigned int *num_qubits,
+    unsigned int *qubits_to_measure,
+    unsigned int *num_qubits_to_measure
 )
 {
     debug("parse_qasm: start")
 
     unsigned int N; // Number of amplitudes.
     complex *state_vector;
-    unsigned char qubits_to_measure_index = 0;
+    unsigned int qubits_to_measure_index = 0;
 
     // Initialize number of qubits
     *num_qubits = MAX_QUBITS;
@@ -469,9 +469,9 @@ int main(int argc, char** argv)
     }
 
     complex *state_vector;
-    unsigned char num_qubits;
-    unsigned char num_qubits_to_measure;
-    unsigned char *qubits_to_measure = (unsigned char*)malloc(MAX_QUBITS * sizeof(unsigned char*));
+    unsigned int num_qubits;
+    unsigned int num_qubits_to_measure;
+    unsigned int *qubits_to_measure = (unsigned int*)malloc(MAX_QUBITS * sizeof(unsigned int*));
 
     debug("main: before parse_qasm")
     state_vector = parse_qasm(filename, &num_qubits, qubits_to_measure, &num_qubits_to_measure);
