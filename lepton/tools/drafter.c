@@ -25,7 +25,7 @@
 #endif
 
 const char *presentation =
-    "DRAFTER version 0.0.4\n"
+    "DRAFTER version 0.0.5\n"
     "ASCII art of circuit diagrams\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";

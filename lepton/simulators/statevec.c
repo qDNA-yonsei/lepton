@@ -38,7 +38,7 @@
 #endif
 
 const char *presentation =
-    "State Vector simulator version 0.0.3\n"
+    "State Vector simulator version 0.0.4\n"
     "Quantum circuit statevector simulator\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
