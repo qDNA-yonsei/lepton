@@ -14,15 +14,15 @@
 extern sparse_element *create_full_gate(
     sparse_element *gate,
     unsigned int nnz_gate,
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char *controls,
-    unsigned char num_controls,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int *controls,
+    unsigned int num_controls,
     unsigned int *nnz_full_gate
 );
 
 sparse_element *id(
-    unsigned char num_qubits,
+    unsigned int num_qubits,
     unsigned int *nnz
 )
 {
@@ -32,8 +32,8 @@ sparse_element *id(
 }
 
 sparse_element *x(
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -53,8 +53,8 @@ sparse_element *x(
 }
 
 sparse_element *y(
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -74,8 +74,8 @@ sparse_element *y(
 }
 
 sparse_element *z(
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -95,8 +95,8 @@ sparse_element *z(
 }
 
 sparse_element *h(
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -133,8 +133,8 @@ sparse_element *h(
 
 sparse_element *rx(
     double theta,
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -143,8 +143,8 @@ sparse_element *rx(
 
 sparse_element *ry(
     double theta,
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -153,8 +153,8 @@ sparse_element *ry(
 
 sparse_element *rz(
     double phi,
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -180,8 +180,8 @@ sparse_element *rz(
 
 sparse_element *p(
     double lambda,
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -193,8 +193,8 @@ sparse_element *u(
     double theta,
     double phi,
     double lambda,
-    unsigned char num_qubits,
-    unsigned char target,
+    unsigned int num_qubits,
+    unsigned int target,
     unsigned int *nnz
 )
 {
@@ -229,9 +229,9 @@ sparse_element *u(
 
 
 sparse_element *cx(
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char control,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int control,
     unsigned int *nnz
 )
 {
@@ -247,16 +247,16 @@ sparse_element *cx(
     gate[1].value.real = 1.0;
     gate[1].value.imag = 0.0;
 
-    unsigned char controls[1];
+    unsigned int controls[1];
     controls[0] = control;
 
     return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz);
 }
 
 sparse_element *cy(
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char control,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int control,
     unsigned int *nnz
 )
 {
@@ -272,16 +272,16 @@ sparse_element *cy(
     gate[1].value.real = 0.0;
     gate[1].value.imag = 1.0;
 
-    unsigned char controls[1];
+    unsigned int controls[1];
     controls[0] = control;
 
     return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz);
 }
 
 sparse_element *cz(
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char control,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int control,
     unsigned int *nnz
 )
 {
@@ -297,16 +297,16 @@ sparse_element *cz(
     gate[1].value.real = -1.0;
     gate[1].value.imag = 0.0;
 
-    unsigned char controls[1];
+    unsigned int controls[1];
     controls[0] = control;
 
     return create_full_gate(gate, 2, num_qubits, target, controls, 1, nnz);
 }
 
 sparse_element *swap(
-    unsigned char num_qubits,
-    unsigned char target1,
-    unsigned char target2,
+    unsigned int num_qubits,
+    unsigned int target1,
+    unsigned int target2,
     unsigned int *nnz
 )
 {
@@ -325,10 +325,10 @@ sparse_element *swap(
 }
 
 sparse_element *cswap(
-    unsigned char num_qubits,
-    unsigned char target1,
-    unsigned char target2,
-    unsigned char control,
+    unsigned int num_qubits,
+    unsigned int target1,
+    unsigned int target2,
+    unsigned int control,
     unsigned int *nnz
 )
 {
@@ -346,10 +346,10 @@ sparse_element *cswap(
 }
 
 sparse_element *ccx(
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char control1,
-    unsigned char control2,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int control1,
+    unsigned int control2,
     unsigned int *nnz
 )
 {
@@ -365,7 +365,7 @@ sparse_element *ccx(
     gate[1].value.real = 1.0;
     gate[1].value.imag = 0.0;
 
-    unsigned char controls[2];
+    unsigned int controls[2];
     controls[0] = control1;
     controls[1] = control2;
 
@@ -400,13 +400,13 @@ sparse_element *one()
 sparse_element *recursive_gate(
     sparse_element *gate,
     unsigned int nnz_gate,
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char *controls,
-    unsigned char *control_state,
-    unsigned char num_controls,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int *controls,
+    unsigned int *control_state,
+    unsigned int num_controls,
     unsigned int *nnz_full_gate,
-    unsigned char current_qubit
+    unsigned int current_qubit
 )
 {
     debug("recursive_gate: start")
@@ -438,7 +438,7 @@ sparse_element *recursive_gate(
             gate, nnz_gate, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
         );
     } else {
-        unsigned char i;
+        unsigned int i;
         for (i = 0; i < num_controls; i++) {
             if (current_qubit == controls[i]) {
                 sparse_element *projector;
@@ -485,11 +485,11 @@ sparse_element *recursive_gate(
     return full_gate;
 }
 
-unsigned char *itob(unsigned char const size, unsigned int const *b)
+unsigned int *itob(unsigned int const size, unsigned int const *b)
 {
     debug("itob: start")
 
-    unsigned char *bits = (unsigned char*)malloc(size * sizeof(unsigned char));
+    unsigned int *bits = (unsigned int*)malloc(size * sizeof(unsigned int));
 
     for (int j = size-1; j >= 0; j--) {
         bits[j] = (b[0] >> j) & 1;
@@ -503,10 +503,10 @@ unsigned char *itob(unsigned char const size, unsigned int const *b)
 sparse_element *create_full_gate(
     sparse_element *gate,
     unsigned int nnz_gate,
-    unsigned char num_qubits,
-    unsigned char target,
-    unsigned char *controls,
-    unsigned char num_controls,
+    unsigned int num_qubits,
+    unsigned int target,
+    unsigned int *controls,
+    unsigned int num_controls,
     unsigned int *nnz_full_gate
 )
 {
@@ -523,7 +523,7 @@ sparse_element *create_full_gate(
         debug("create_full_gate: num_controls!=0")
 
         unsigned int num_partial_states = (1 << num_controls) - 1;
-        unsigned char *ctrl_state = itob(num_controls, &num_partial_states);
+        unsigned int *ctrl_state = itob(num_controls, &num_partial_states);
 
         full_gate = recursive_gate(
             gate, nnz_gate, num_qubits, target, controls, ctrl_state, num_controls, nnz_full_gate, 0

@@ -7,7 +7,7 @@
 #include "../lib/measurement.h"
 
 #ifdef __Z88DK
-#pragma printf = "%d %f"
+#pragma printf = "%u %f"
 #endif
 
 void print_state_vector(complex *state_vector, int num_qubits)
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     printf("\n");
 
     /* Calculate the ideal measurement probabilities vector. */
-    unsigned char *qubits_to_measure = (unsigned char*)malloc(2 * sizeof(unsigned char));
+    unsigned int *qubits_to_measure = (unsigned int*)malloc(2 * sizeof(unsigned int));
     qubits_to_measure[0] = 0;
     qubits_to_measure[1] = 1;
 
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
         }
     }
 
-    printf("Measurement outcome: %d\n\n", outcome);
+    printf("Measurement outcome: %u\n\n", outcome);
 
     /* Calculate the postselection state vector. */
     complex* postselection = measurement_postselection(outcome, current_state, 2, qubits_to_measure, 2);

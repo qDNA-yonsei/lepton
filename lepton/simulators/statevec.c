@@ -13,8 +13,8 @@
 #include "../lib/measurement.h"
 
 #ifdef __Z88DK
-#pragma printf = "%d %s %f"
-#pragma scanf = "%d %s %f"
+#pragma printf = "%u %s %f"
+#pragma scanf = "%u %s %f"
 #endif
 
 #define lower_case(c) ((c) | 32)
@@ -38,7 +38,7 @@
 #endif
 
 const char *presentation =
-    "State Vector simulator version 0.0.3\n"
+    "State Vector simulator version 0.0.4\n"
     "Quantum circuit statevector simulator\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
@@ -56,7 +56,7 @@ const char *usage =
     "/h: This help.\n";
 
 const char* invalid_parameter = "Invalid parameter(s)\n";
-const char* invalid_num_qubits = "Num. of qubits %d exceeded the max. %d\n";
+const char* invalid_num_qubits = "Num. of qubits %u exceeded the max. %u\n";
 
 void print_bits(int const size, void const * const ptr)
 {
@@ -66,11 +66,11 @@ void print_bits(int const size, void const * const ptr)
 
     for (j = size-1; j >= 0; j--) {
         byte = (b[0] >> j) & 1;
-        printf("%d", byte);
+        printf("%u", byte);
     }
 }
 
-void print_state_vector(complex *state_vector, unsigned char num_qubits)
+void print_state_vector(complex *state_vector, unsigned int num_qubits)
 {
     unsigned int length = 1 << num_qubits;
     for (unsigned int i = 0; i < length; i++) {
@@ -98,7 +98,7 @@ void print_counts_vector(unsigned int *counts_vector, unsigned int num_qubits)
     for (unsigned int i = 0; i < length; i++) {
         print_bits(num_qubits, &i);
         printf(" : ");
-        printf("%d", counts_vector[i]);
+        printf("%u", counts_vector[i]);
         printf("\n");
     }
 }
@@ -123,16 +123,16 @@ void remove_char(char* str, char find) {
 // Parses a QASM file and builds the corresponding quantum gates.
 complex *parse_qasm(
     const char* filename,
-    unsigned char *num_qubits,
-    unsigned char *qubits_to_measure,
-    unsigned char *num_qubits_to_measure
+    unsigned int *num_qubits,
+    unsigned int *qubits_to_measure,
+    unsigned int *num_qubits_to_measure
 )
 {
     debug("parse_qasm: start")
 
     unsigned int N; // Number of amplitudes.
     complex *state_vector;
-    unsigned char qubits_to_measure_index = 0;
+    unsigned int qubits_to_measure_index = 0;
 
     // Initialize number of qubits
     *num_qubits = MAX_QUBITS;
@@ -174,18 +174,18 @@ complex *parse_qasm(
             else if (strcmp(instruction, "measure") == 0) {
                 debug("parse_qasm: measure")
 
-                sscanf(line, "%*s q[%d]", &qubit_target);
+                sscanf(line, "%*s q[%u]", &qubit_target);
 
-                debug2("parse_qasm: qubit_target = %d", qubit_target)
+                debug2("parse_qasm: qubit_target = %u", qubit_target)
 
                 qubits_to_measure[qubits_to_measure_index++] = qubit_target;
             }
             else if (strcmp(instruction, "qreg") == 0) {
                 debug("parse_qasm: qreg")
 
-                sscanf(line, "%*s q[%d]", num_qubits);
+                sscanf(line, "%*s q[%u]", num_qubits);
 
-                debug2("parse_qasm: num_qubits = %d", *num_qubits)
+                debug2("parse_qasm: num_qubits = %u", *num_qubits)
 
                 if (*num_qubits > MAX_QUBITS) {
                     printf(invalid_num_qubits, *num_qubits, MAX_QUBITS);
@@ -225,7 +225,7 @@ complex *parse_qasm(
                 debug("parse_qasm: parameterized single-qubit")
 
                 // Single-qubit parameterized instruction
-                sscanf(line, "%s q[%d]", instruction2, &qubit_target);
+                sscanf(line, "%s q[%u]", instruction2, &qubit_target);
                 remove_char(instruction2, ' ');
                 remove_char(instruction2, ')');
                 replace_char(instruction2, '(', ' ');
@@ -233,7 +233,7 @@ complex *parse_qasm(
 
                 debug2("parse_qasm: instruction = %s", instruction)
                 debug2("parse_qasm: instruction2 = %s", instruction2)
-                debug2("parse_qasm: qubit_target = %d", qubit_target)
+                debug2("parse_qasm: qubit_target = %u", qubit_target)
 
                 double parameter_value;
                 double parameter_value2;
@@ -303,13 +303,13 @@ complex *parse_qasm(
                 strcmp(instruction, "swap") == 0
             ) {
                 debug("parse_qasm: two-qubit")
-                debug2("parse_qasm: num_qubits = %d", *num_qubits)
+                debug2("parse_qasm: num_qubits = %u", *num_qubits)
 
                 // Two-qubit instruction
-                sscanf(line, "%*s q[%d], q[%d]", &qubit_control1, &qubit_target);
+                sscanf(line, "%*s q[%u], q[%u]", &qubit_control1, &qubit_target);
 
-                debug2("parse_qasm: qubit_target = %d", qubit_target)
-                debug2("parse_qasm: qubit_control1 = %d", qubit_control1)
+                debug2("parse_qasm: qubit_target = %u", qubit_target)
+                debug2("parse_qasm: qubit_control1 = %u", qubit_control1)
 
                 unsigned int nnz;
                 sparse_element *gate;
@@ -345,12 +345,12 @@ complex *parse_qasm(
 
                 // Three-qubit instruction
                 sscanf(
-                    line, "%*s q[%d], q[%d], q[%d]", &qubit_control1, &qubit_control2, &qubit_target
+                    line, "%*s q[%u], q[%u], q[%u]", &qubit_control1, &qubit_control2, &qubit_target
                 );
 
-                debug2("parse_qasm: qubit_target = %d", qubit_target)
-                debug2("parse_qasm: qubit_control1 = %d", qubit_control1)
-                debug2("parse_qasm: qubit_control2 = %d", qubit_control2)
+                debug2("parse_qasm: qubit_target = %u", qubit_target)
+                debug2("parse_qasm: qubit_control1 = %u", qubit_control1)
+                debug2("parse_qasm: qubit_control2 = %u", qubit_control2)
 
                 unsigned int nnz;
                 sparse_element *gate;
@@ -372,12 +372,12 @@ complex *parse_qasm(
             }
             else {
                 debug("parse_qasm: single-qubit")
-                debug2("parse_qasm: num_qubits = %d", *num_qubits)
+                debug2("parse_qasm: num_qubits = %u", *num_qubits)
 
                 // Single-qubit instruction
-                sscanf(line, "%*s q[%d]", &qubit_target);
+                sscanf(line, "%*s q[%u]", &qubit_target);
 
-                debug2("parse_qasm: qubit_target = %d", qubit_target)
+                debug2("parse_qasm: qubit_target = %u", qubit_target)
 
                 unsigned int nnz;
                 sparse_element *gate;
@@ -427,51 +427,51 @@ complex *parse_qasm(
 int main(int argc, char** argv)
 {
     if(argc == 1) {
-        printf(presentation);
-        printf(usage);
+        printf("%s", presentation);
+        printf("%s", usage);
         exit(EXIT_FAILURE);
     }
 
     char verbose = 1;
-    char param_letter;
+    char param_char;
     char show_state_vector = 0;
     unsigned int shots = 0;
     const char* filename;
-    for (int param = 0; param < argc; param++) {
-        if(argv[param][0] == '/') {
-            param_letter = lower_case(argv[param][1]);
-            if(param_letter == 's') {
+    for (argv++; --argc; argv++) {
+        if(**argv == '/') {
+            param_char = lower_case(*(*argv+1));
+            if(param_char == 's') {
                 verbose = 0;
             }
-            else if(param_letter == 'h') {
-                printf(presentation);
-                printf(usage);
+            else if(param_char == 'h') {
+                printf("%s", presentation);
+                printf("%s", usage);
                 return 0;
             }
-            else if(param_letter == 'v') {
-                show_state_vector = atoi(argv[param]+2);
+            else if(param_char == 'v') {
+                show_state_vector = atoi(*argv+2);
             }
-            else if(param_letter == 'm') {
-                shots = atoi(argv[param]+2);
+            else if(param_char == 'm') {
+                shots = atoi(*argv+2);
             }
             else {
-                printf(invalid_parameter);
+                printf("%s", invalid_parameter);
                 exit(EXIT_FAILURE);
             }
         }
         else {
-            filename = argv[param];
+            filename = *argv;
         }
     }
 
     if (verbose) {
-        printf(presentation);
+        printf("%s", presentation);
     }
 
     complex *state_vector;
-    unsigned char num_qubits;
-    unsigned char num_qubits_to_measure;
-    unsigned char *qubits_to_measure = (unsigned char*)malloc(MAX_QUBITS * sizeof(unsigned char*));
+    unsigned int num_qubits;
+    unsigned int num_qubits_to_measure;
+    unsigned int *qubits_to_measure = (unsigned int*)malloc(MAX_QUBITS * sizeof(unsigned int*));
 
     debug("main: before parse_qasm")
     state_vector = parse_qasm(filename, &num_qubits, qubits_to_measure, &num_qubits_to_measure);
@@ -482,7 +482,7 @@ int main(int argc, char** argv)
         if (verbose) {
             printf("State vector:\n");
         }
-        debug2("main: num_qubits = %d", num_qubits)
+        debug2("main: num_qubits = %u", num_qubits)
         print_state_vector(state_vector, num_qubits);
         printf("\n");
     }
@@ -502,8 +502,8 @@ int main(int argc, char** argv)
 
     /* Perform the shots. */
     if (shots > 0) {
-        debug2("main: shots : shots = %d", shots)
-        debug2("main: shots : num_qubits_to_measure = %d", num_qubits_to_measure)
+        debug2("main: shots : shots = %u", shots)
+        debug2("main: shots : num_qubits_to_measure = %u", num_qubits_to_measure)
 
         /* Print measurement counts. */
         srand((unsigned int)clock());

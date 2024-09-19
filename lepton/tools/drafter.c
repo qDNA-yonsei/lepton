@@ -8,6 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __Z88DK
+#pragma printf = "%u %s"
+#pragma scanf = "%u %s"
+#endif
+
 #define lower_case(c) ((c) | 32)
 
 #define MAX_GATE_NAME_LEN 32
@@ -25,7 +30,7 @@
 #endif
 
 const char *presentation =
-    "DRAFTER version 0.0.4\n"
+    "DRAFTER version 0.0.5\n"
     "ASCII art of circuit diagrams\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
@@ -39,7 +44,7 @@ const char *usage =
     "/h: This help.\n";
 
 const char* invalid_parameter = "Invalid parameter(s)\n";
-const char* invalid_num_qubits = "Num. of qubits %d exceeded the max. %d\n";
+const char* invalid_num_qubits = "Num. of qubits %u exceeded the max. %u\n";
 
 // Parse a QASM file and store the circuit in a 2D array of characters
 void parse_qasm(const char* filename, char* circuit)
@@ -56,7 +61,7 @@ void parse_qasm(const char* filename, char* circuit)
 
     unsigned int qubit_target;
     unsigned int qubit_control1, qubit_control2;
-    unsigned char num_qubits = MAX_QUBITS;
+    unsigned int num_qubits = MAX_QUBITS;
     char line[MAX_QASM_LINE_LEN];
     char instruction[MAX_GATE_NAME_LEN];
 
@@ -75,7 +80,7 @@ void parse_qasm(const char* filename, char* circuit)
                 /* code */
             }
             else if (strcmp(instruction, "qreg") == 0) {
-                sscanf(line, "%s q[%d]", instruction, &num_qubits);
+                sscanf(line, "%s q[%u]", instruction, &num_qubits);
 
                 if (num_qubits > MAX_QUBITS) {
                     printf(invalid_num_qubits, num_qubits, MAX_QUBITS);
@@ -88,13 +93,13 @@ void parse_qasm(const char* filename, char* circuit)
             }
             else if (strcmp(instruction, "barrier") == 0) {
                 unsigned char max_offset = 0;
-                for (unsigned char qubit = 0; qubit < num_qubits; qubit++) {
+                for (unsigned int qubit = 0; qubit < num_qubits; qubit++) {
                     if (qubit_offsets[qubit] > max_offset) {
                         max_offset = qubit_offsets[qubit];
                     }
                 }
                 unsigned int row;
-                for (unsigned char qubit = 0; qubit < num_qubits; qubit++) {
+                for (unsigned int qubit = 0; qubit < num_qubits; qubit++) {
                     row = qubit * 2 * CIRCUIT_DEPTH;
                     for (unsigned char col = qubit_offsets[qubit]; col <= max_offset; col++) {
                         circuit[row + col] = '-';
@@ -113,7 +118,7 @@ void parse_qasm(const char* filename, char* circuit)
                 strcmp(instruction, "swap") == 0
             ) {
                 // Two-qubit instruction
-                sscanf(line, "%s q[%d], q[%d]", instruction, &qubit_control1, &qubit_target);
+                sscanf(line, "%s q[%u], q[%u]", instruction, &qubit_control1, &qubit_target);
 
                 char target_symbol = 'x';
                 char control_symbol = 'o';
@@ -167,7 +172,7 @@ void parse_qasm(const char* filename, char* circuit)
             ) {
                 // Three-qubit instruction
                 sscanf(
-                    line, "%*s q[%d], q[%d], q[%d]", &qubit_control1, &qubit_control2, &qubit_target
+                    line, "%*s q[%u], q[%u], q[%u]", &qubit_control1, &qubit_control2, &qubit_target
                 );
 
                 char target_symbol = 'x';
@@ -220,7 +225,7 @@ void parse_qasm(const char* filename, char* circuit)
             }
             else {
                 // Single-qubit instruction
-                sscanf(line, "%s q[%d]", instruction, &qubit_target);
+                sscanf(line, "%s q[%u]", instruction, &qubit_target);
 
                 if (strcmp(instruction, "measure") == 0) {
                     instruction[0] = 'M';
@@ -275,7 +280,7 @@ void print_circuit(char* circuit)
 {
     for (unsigned char i = 0; i < CIRCUIT_WIDTH; i++) {
         if (circuit[i * CIRCUIT_DEPTH] != '\0') {
-            printf(circuit+(i * CIRCUIT_DEPTH));
+            printf("%s", circuit+(i * CIRCUIT_DEPTH));
             printf("\n");
         }
     }
@@ -284,37 +289,37 @@ void print_circuit(char* circuit)
 int main(int argc, char** argv)
 {
     if(argc == 1) {
-        printf(presentation);
-        printf(usage);
+        printf("%s", presentation);
+        printf("%s", usage);
         exit(EXIT_FAILURE);
     }
 
     char present = 1;
-    char param_letter;
+    char param_char;
     const char* filename;
-    for (int param = 0; param < argc; param++) {
-        if(argv[param][0] == '/') {
-            param_letter = lower_case(argv[param][1]);
-            if(param_letter == 's') {
+    for (argv++; --argc; argv++) {
+        if(**argv == '/') {
+            param_char = lower_case(*(*argv+1));
+            if(param_char == 's') {
                 present = 0;
             }
-            else if(param_letter == 'h') {
-                printf(presentation);
-                printf(usage);
+            else if(param_char == 'h') {
+                printf("%s", presentation);
+                printf("%s", usage);
                 return 0;
             }
             else {
-                printf(invalid_parameter);
+                printf("%s", invalid_parameter);
                 exit(EXIT_FAILURE);
             }
         }
         else {
-            filename = argv[param];
+            filename = *argv;
         }
     }
 
     if (present) {
-        printf(presentation);
+        printf("%s", presentation);
     }
 
     // Parse QASM file and print circuit
