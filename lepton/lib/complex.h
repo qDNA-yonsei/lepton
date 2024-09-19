@@ -7,13 +7,13 @@
 
 // Struct for a complex number
 typedef struct {
-    double real;
-    double imag;
+    float real;
+    float imag;
 } complex;
 
 extern void print_complex(complex a);
 extern void print_complex_polar(complex a);
-extern complex *polar_to_standard(double mag, double arg);
+extern complex *polar_to_standard(float mag, float arg);
 
 /* Arithmetic operations */
 extern complex *add_complex(complex a, complex b);
@@ -22,8 +22,8 @@ extern complex *multiply_complex(complex a, complex b);
 extern complex *divide_complex(complex a, complex b);
 
 /* Basic operations*/
-extern double complex_abs(complex a);
-extern double complex_arg(complex a);
+extern float complex_abs(complex a);
+extern float complex_arg(complex a);
 extern complex *complex_conjugate(complex a);
 
 #endif /* COMPLEX_H */

@@ -12,14 +12,14 @@ void print_complex(complex a)
 // Print a complex number in the polar format: (abs)exp((arg)i)
 void print_complex_polar(complex a)
 {
-    double magnitude = complex_abs(a);
-    double angle = complex_arg(a);
+    float magnitude = complex_abs(a);
+    float angle = complex_arg(a);
 
     printf("%f*exp(%fi)", magnitude, angle);
 }
 
 // Convert polar information into a standard complex number
-complex *polar_to_standard(double mag, double arg) {
+complex *polar_to_standard(float mag, float arg) {
     complex *a = (complex*)malloc(sizeof(complex));
     a->real = mag * cos(arg);
     a->imag = mag * sin(arg);
@@ -59,7 +59,7 @@ complex *multiply_complex(complex a, complex b)
 complex *divide_complex(complex a, complex b)
 {
     complex *c = (complex*)malloc(sizeof(complex));
-    double d = b.real * b.real + b.imag * b.imag;
+    float d = b.real * b.real + b.imag * b.imag;
     c->real = (a.real * b.real + a.imag * b.imag) / d;
     c->imag = (a.imag * b.real - a.real * b.imag) / d;
     return c;
@@ -68,13 +68,13 @@ complex *divide_complex(complex a, complex b)
 /* Basic operations*/
 
 // Absolute value (or modulus or magnitude) of a complex number
-double complex_abs(complex a)
+float complex_abs(complex a)
 {
     return sqrt(a.real * a.real + a.imag * a.imag);
 }
 
 // Argument (or phase) of a complex number
-double complex_arg(complex a)
+float complex_arg(complex a)
 {
     return atan2(a.imag, a.real);
 }

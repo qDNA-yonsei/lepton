@@ -18,9 +18,9 @@ build:
 	@$(CC) $(CCFLAGS) -c $(LIB)/sparse_matrix.c -o $(BIN)/sparse_matrix.o
 	@$(CC) $(CCFLAGS) -c $(LIB)/measurement.c -o $(BIN)/measurement.o
 	@$(CC) $(CCFLAGS) -c $(LIB)/gate.c -o $(BIN)/gate.o
-	@$(CC) $(CCFLAGS) $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/simbell.com -lmath48 -DAMALLOC -lndos
+	@$(CC) $(CCFLAGS) $(EXAMPLES)/sim_bell.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/simbell.com -lm -DAMALLOC -lndos
 	@$(CC) $(CCFLAGS) $(TOOLS)/drafter.c -o $(BIN)/drafter.com -DAMALLOC
-	@$(CC) $(CCFLAGS) $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec.com -lmath48 -DAMALLOC
+	@$(CC) $(CCFLAGS) $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec.com -lm -DAMALLOC
 
 clean:
 	@rm -f $(BIN)/*.c $(BIN)/*.h $(BIN)/*.o

@@ -3,7 +3,7 @@
 
 #include "complex.h"
 
-extern double* measurement_probabilities(
+extern float* measurement_probabilities(
     complex *state_vector,
     unsigned int num_qubits,
     unsigned int *qubits_to_measure,
@@ -11,7 +11,7 @@ extern double* measurement_probabilities(
 );
 
 extern unsigned int* measurement_counts(
-    double* probabiblities,
+    float* probabiblities,
     unsigned int num_qubits_measured,
     unsigned int shots
 );

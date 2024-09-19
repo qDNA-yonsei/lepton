@@ -26,12 +26,12 @@ sparse_element *y(unsigned int num_qubits, unsigned int target, unsigned int *nn
 sparse_element *z(unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 sparse_element *h(unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 
-sparse_element *rx(double theta, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
-sparse_element *ry(double theta, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
-sparse_element *rz(double phi, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
-sparse_element *p(double lambda, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *rx(float theta, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *ry(float theta, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *rz(float phi, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *p(float lambda, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 
-sparse_element *u(double theta, double phi, double lambda, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
+sparse_element *u(float theta, float phi, float lambda, unsigned int num_qubits, unsigned int target, unsigned int *nnz);
 
 sparse_element *cx(unsigned int num_qubits, unsigned int target, unsigned int control, unsigned int *nnz);
 sparse_element *cy(unsigned int num_qubits, unsigned int target, unsigned int control, unsigned int *nnz);

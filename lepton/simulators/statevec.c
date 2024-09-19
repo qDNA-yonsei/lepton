@@ -81,7 +81,7 @@ void print_state_vector(complex *state_vector, unsigned int num_qubits)
     }
 }
 
-void print_probabilities_vector(double *probs_vector, unsigned int num_qubits)
+void print_probabilities_vector(float *probs_vector, unsigned int num_qubits)
 {
     unsigned int length = 1 << num_qubits;
     for (unsigned int i = 0; i < length; i++) {
@@ -235,8 +235,8 @@ complex *parse_qasm(
                 debug2("parse_qasm: instruction2 = %s", instruction2)
                 debug2("parse_qasm: qubit_target = %u", qubit_target)
 
-                double parameter_value;
-                double parameter_value2;
+                float parameter_value;
+                float parameter_value2;
 
                 char *slash;
                 slash = strchr(instruction2, '/');
@@ -488,7 +488,7 @@ int main(int argc, char** argv)
     }
 
     /* Print ideal measurement probabilities. */
-    double* probs = measurement_probabilities(
+    float* probs = measurement_probabilities(
             state_vector,
             num_qubits,
             qubits_to_measure,

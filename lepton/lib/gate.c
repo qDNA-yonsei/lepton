@@ -103,7 +103,7 @@ sparse_element *h(
     debug("h: start")
     sparse_element gate[4];
 
-    double z = 1/sqrt(2);
+    float z = 1/sqrt(2);
 
     gate[0].row = 0;
     gate[0].col = 0;
@@ -132,7 +132,7 @@ sparse_element *h(
 
 
 sparse_element *rx(
-    double theta,
+    float theta,
     unsigned int num_qubits,
     unsigned int target,
     unsigned int *nnz
@@ -142,7 +142,7 @@ sparse_element *rx(
 }
 
 sparse_element *ry(
-    double theta,
+    float theta,
     unsigned int num_qubits,
     unsigned int target,
     unsigned int *nnz
@@ -152,7 +152,7 @@ sparse_element *ry(
 }
 
 sparse_element *rz(
-    double phi,
+    float phi,
     unsigned int num_qubits,
     unsigned int target,
     unsigned int *nnz
@@ -179,7 +179,7 @@ sparse_element *rz(
 
 
 sparse_element *p(
-    double lambda,
+    float lambda,
     unsigned int num_qubits,
     unsigned int target,
     unsigned int *nnz
@@ -190,9 +190,9 @@ sparse_element *p(
 
 
 sparse_element *u(
-    double theta,
-    double phi,
-    double lambda,
+    float theta,
+    float phi,
+    float lambda,
     unsigned int num_qubits,
     unsigned int target,
     unsigned int *nnz
