@@ -290,26 +290,26 @@ int main(int argc, char** argv)
     }
 
     char present = 1;
-    char param_letter;
+    char param_char;
     const char* filename;
-    for (int param = 0; param < argc; param++) {
-        if(argv[param][0] == '/') {
-            param_letter = lower_case(argv[param][1]);
-            if(param_letter == 's') {
+    for (argv++; --argc; argv++) {
+        if(**argv == '/') {
+            param_char = lower_case(*(*argv+1));
+            if(param_char == 's') {
                 present = 0;
             }
-            else if(param_letter == 'h') {
-                printf(presentation);
-                printf(usage);
+            else if(param_char == 'h') {
+                printf("%s", presentation);
+                printf("%s", usage);
                 return 0;
             }
             else {
-                printf(invalid_parameter);
+                printf("%s", invalid_parameter);
                 exit(EXIT_FAILURE);
             }
         }
         else {
-            filename = argv[param];
+            filename = *argv;
         }
     }
 

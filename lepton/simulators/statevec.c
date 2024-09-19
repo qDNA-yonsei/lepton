@@ -433,34 +433,34 @@ int main(int argc, char** argv)
     }
 
     char verbose = 1;
-    char param_letter;
+    char param_char;
     char show_state_vector = 0;
     unsigned int shots = 0;
     const char* filename;
-    for (int param = 0; param < argc; param++) {
-        if(argv[param][0] == '/') {
-            param_letter = lower_case(argv[param][1]);
-            if(param_letter == 's') {
+    for (argv++; --argc; argv++) {
+        if(**argv == '/') {
+            param_char = lower_case(*(*argv+1));
+            if(param_char == 's') {
                 verbose = 0;
             }
-            else if(param_letter == 'h') {
-                printf(presentation);
-                printf(usage);
+            else if(param_char == 'h') {
+                printf("%s", presentation);
+                printf("%s", usage);
                 return 0;
             }
-            else if(param_letter == 'v') {
-                show_state_vector = atoi(argv[param]+2);
+            else if(param_char == 'v') {
+                show_state_vector = atoi(*argv+2);
             }
-            else if(param_letter == 'm') {
-                shots = atoi(argv[param]+2);
+            else if(param_char == 'm') {
+                shots = atoi(*argv+2);
             }
             else {
-                printf(invalid_parameter);
+                printf("%s", invalid_parameter);
                 exit(EXIT_FAILURE);
             }
         }
         else {
-            filename = argv[param];
+            filename = *argv;
         }
     }
 
