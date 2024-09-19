@@ -3,7 +3,7 @@
 #include <math.h>
 #include "measurement.h"
 
-double* measurement_probabilities(
+float* measurement_probabilities(
     complex *state_vector,
     unsigned int num_qubits,
     unsigned int *qubits_to_measure,
@@ -15,13 +15,13 @@ double* measurement_probabilities(
     unsigned int length_state = 1 << num_qubits;
 
     /* Calculate the probability of measuring each state: |amp|^2 . */
-    double* probs = (double*)malloc(sizeof(double) * length_measure);
+    float* probs = (float*)malloc(sizeof(float) * length_measure);
     for (i = 0; i < length_measure; i++) {
         probs[i] = 0.0;
     }
 
     complex amp;
-    double prob;
+    float prob;
     unsigned int idx;
     for (i = 0; i < length_state; i++) {
         idx = 0;
@@ -39,7 +39,7 @@ double* measurement_probabilities(
 }
 
 unsigned int* measurement_counts(
-    double* probabilities,
+    float* probabilities,
     unsigned int num_qubits_measured,
     unsigned int shots
 )
@@ -53,11 +53,11 @@ unsigned int* measurement_counts(
     }
 
     /* Randomly select a state based on the probabilities. */
-    double* probs_ptr;
-    double rand_val;
-    double cum_prob;
+    float* probs_ptr;
+    float rand_val;
+    float cum_prob;
     for (j = 0; j < shots; j++) {
-        rand_val = ((double)rand() / RAND_MAX);
+        rand_val = ((float)rand() / RAND_MAX);
         cum_prob = 0.0;
         probs_ptr = probabilities;
         for (i = 0; i < length_measure; i++) {

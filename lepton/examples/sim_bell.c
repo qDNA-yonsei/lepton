@@ -19,7 +19,7 @@ void print_state_vector(complex *state_vector, int num_qubits)
     }
 }
 
-void print_probabilities_vector(double *probs_vector, int num_qubits)
+void print_probabilities_vector(float *probs_vector, int num_qubits)
 {
     unsigned int length = 1 << num_qubits;
     for (unsigned int i = 0; i < length; i++) {
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     qubits_to_measure[0] = 0;
     qubits_to_measure[1] = 1;
 
-    double* probs = measurement_probabilities(current_state, 2, qubits_to_measure, 2);
+    float* probs = measurement_probabilities(current_state, 2, qubits_to_measure, 2);
 
     /* Print ideal measurement probabilities. */
     printf("Measurement ideal probabilities:\n");
