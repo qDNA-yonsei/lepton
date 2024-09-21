@@ -3,15 +3,15 @@ As illustrated below, Lepton is operational on a Litex Risc-V SoC implemented on
 
 | Litex SoC configuration  | Linux on Litex           |
 :-------------------------:|:-------------------------:
-![Litex SoC configuration](images/riscv/litex.png?raw=true "Litex SoC configuration") | ![Linux on Litex](images/riscv/linux_on_litex.png?raw=true "Linux on Litex")
+![Litex SoC configuration](images/riscv/litex.png "Litex SoC configuration") | ![Linux on Litex](images/riscv/linux_on_litex.png "Linux on Litex")
 
 | Bell circuit diagram     | Bell simulation          |
 :-------------------------:|:-------------------------:
-![Bell circuit diagram](images/riscv/drafter_bell.png?raw=true "Bell circuit diagram") | ![Bell simulation](images/riscv/statevec_bell.png?raw=true "Bell simulation")
+![Bell circuit diagram](images/riscv/drafter_bell.png "Bell circuit diagram") | ![Bell simulation](images/riscv/statevec_bell.png "Bell simulation")
 
 | MCNOT circuit diagram    | MCNOT simulation         |
 :-------------------------:|:-------------------------:
-![MCNOT circuit diagram](images/riscv/drafter_mcnot.png?raw=true "MCNOT circuit diagram") | ![MCNOT simulation](images/riscv/statevec_mcnot.png?raw=true "MCNOT simulation")
+![MCNOT circuit diagram](images/riscv/drafter_mcnot.png "MCNOT circuit diagram") | ![MCNOT simulation](images/riscv/statevec_mcnot.png "MCNOT simulation")
 
 Linux on LiteX-VexRiscv:
 https://github.com/litex-hub/linux-on-litex-vexriscv
