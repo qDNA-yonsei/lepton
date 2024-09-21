@@ -4,7 +4,7 @@ Lepton is an educational quantum simulator designed to run on small devices with
 Although it is not intended to replace existing quantum simulation libraries, such as Qiskit or Pennylane, Lepton offers a unique approach to quantum simulation that is both accessible and efficient.
 
 ## Demo
-Lepton is shown operating on an MSX1 computer with a Zilog Z80 CPU running at 3.58 MHz and 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems.
+Lepton is shown operating on an MSX1 computer with a Zilog Z80 CPU running at 3.58 MHz and 64 kilobytes of RAM, demonstrating its compatibility with low-resource computing systems (find out more at [docs](docs).).
 
 https://github.com/israelferrazaraujo/lepton/assets/33506768/a8b915dd-89b7-4552-9338-ffd02fc7fce9
 
