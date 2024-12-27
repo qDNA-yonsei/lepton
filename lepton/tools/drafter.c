@@ -1,4 +1,4 @@
-/* Drafter version 0.0.1
+/* Drafter
    ASCII art of circuit diagrams
 
    https://github.com/qDNA-yonsei/lepton
