@@ -47,13 +47,14 @@ Lepton requires Linux to be built, although it may also work on macOS (though th
 To build Lepton, you will need the following tools:
 
 * `make` and `gcc`. On Debian-based systems, you can install them with `apt-get install build-essential`.
-* [SDCC](http://sdcc.sourceforge.net/) **v4.0.0 or newer**. On Debian-based systems, you can install it with `apt-get install sdcc`.
 * [z88dk](https://z88dk.org/) **v2.2 or newer**. To install it on Linux systems, please follow the instructions provided in https://github.com/z88dk/z88dk/wiki/installation#linux--unix.
+* [IA-16 GCC toolchain](https://gitlab.com/tkchia/build-ia16). To install it on Linux systems, refer to the instructions available at https://launchpad.net/~tkchia/+archive/ubuntu/build-ia16/.
 
 To build Lepton, you can use one of the two provided makefiles, depending on your target system. Once you have installed the required tools, simply navigate to the relevant directory and run `make`. Here are the makefiles available:
 
 * `make/linux`: builds all binaries for Linux using `gcc` and copies them to the `bin/linux` directory.
 * `make/cpm`: builds all binaries for CP/M (z80) using `zcc` (z88dk) and copies them to the `bin/cpm` directory.
+* `make/dos`: builds all binaries for DOS (8088) using `ia16-elf-gcc` and copies them to the `bin/dos` directory.
 
 ## Authors
 Lepton's first version was developed in a collaboration between [Quantum Data Science & AI lab](https://quantumpark.yonsei.ac.kr/) (also known as q-DNA) at Yonsei University and [Centro de Informática](https://portal.cin.ufpe.br) at UFPE.
