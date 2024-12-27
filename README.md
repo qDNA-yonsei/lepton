@@ -50,7 +50,7 @@ To build Lepton, you will need the following tools:
 * [z88dk](https://z88dk.org/) **v2.2 or newer**. To install it on Linux systems, please follow the instructions provided in https://github.com/z88dk/z88dk/wiki/installation#linux--unix.
 * [IA-16 GCC toolchain](https://gitlab.com/tkchia/build-ia16). To install it on Linux systems, refer to the instructions available at https://launchpad.net/~tkchia/+archive/ubuntu/build-ia16/.
 
-To build Lepton, you can use one of the two provided makefiles, depending on your target system. Once you have installed the required tools, simply navigate to the relevant directory and run `make`. Here are the makefiles available:
+To build Lepton, you can use one of the provided makefiles, depending on your target system. Once you have installed the required tools, simply navigate to the relevant directory and run `make`. Here are the makefiles available:
 
 * `make/linux`: builds all binaries for Linux using `gcc` and copies them to the `bin/linux` directory.
 * `make/cpm`: builds all binaries for CP/M (z80) using `zcc` (z88dk) and copies them to the `bin/cpm` directory.
