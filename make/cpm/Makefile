@@ -23,4 +23,5 @@ build:
 	@$(CC) $(CCFLAGS) $(SIMULATORS)/statevec.c $(BIN)/complex.o $(BIN)/sparse_matrix.o $(BIN)/measurement.o $(BIN)/gate.o -o $(BIN)/statevec.com -lm -DAMALLOC
 
 clean:
+	@echo "Cleaning ... !"
 	@rm -f $(BIN)/*.c $(BIN)/*.h $(BIN)/*.o

@@ -1,4 +1,4 @@
-/* State Vector simulator version 0.0.1
+/* State Vector simulator
    Quantum circuit statevector simulator
 
    https://github.com/qDNA-yonsei/lepton

@@ -2,6 +2,17 @@
 #include <stdlib.h>
 #include "sparse_matrix.h"
 
+#ifdef __Z88DK
+    #define min(a,b) ((a) < (b) ? (a) : (b))
+#else
+    #define min(a,b)             \
+    ({                           \
+        __typeof__ (a) _a = (a); \
+        __typeof__ (b) _b = (b); \
+        _a < _b ? _a : _b;       \
+    })
+#endif
+
 /** @brief Print a sparse matrix.
  *
  *  @param A Sparse complex matrix.
@@ -67,7 +78,12 @@ sparse_element *sparse_kronecker_product(
     *nnzC = nnzA * nnzB;
 
     sparse_element* C = (sparse_element*)malloc((*nnzC) * sizeof(sparse_element));
-    
+    if (C == NULL) {
+        // Handle reallocation failure
+        fprintf(stderr, "sparse_kronecker_product: Memory allocation failed\n");
+        exit(1);
+    }
+
     complex *valueC;
     sparse_element* A_ptr = A;
     sparse_element* A_ptr_max = A + nnzA;
@@ -109,12 +125,17 @@ complex *sparse_matrix_vector_multiplication(
 {
     unsigned int i;
     complex* y = (complex*)malloc(m * sizeof(complex));
-    
+    if (y == NULL) {
+        // Handle reallocation failure
+        fprintf(stderr, "sparse_matrix_vector_multiplication: Memory allocation failed\n");
+        exit(1);
+    }
+
     complex* y_ptr = y;
     complex* y_ptr_max = y + m;
     while (y_ptr < y_ptr_max) {
-        y_ptr->real = 0;
-        y_ptr->imag = 0;
+        y_ptr->real = 0.0;
+        y_ptr->imag = 0.0;
         y_ptr++;
     }
 
@@ -158,6 +179,11 @@ sparse_element *sparse_add(
 {
     // allocate memory for the result matrix
     sparse_element* C = (sparse_element*)malloc((nnzA + nnzB) * sizeof(sparse_element));
+    if (C == NULL) {
+        // Handle reallocation failure
+        fprintf(stderr, "sparse_add: Memory allocation failed\n");
+        exit(1);
+    }
 
     // initialize pointers for iterating through the three matrices
     unsigned int i = 0, j = 0;
@@ -205,6 +231,11 @@ sparse_element *sparse_add(
 
     // Reallocate memory for result matrix C to minimize memory usage
     C = (sparse_element*)realloc(C, (*nnzC) * sizeof(sparse_element));
+    if (C == NULL) {
+        // Handle reallocation failure
+        fprintf(stderr, "sparse_add: Final memory reallocation failed\n");
+        exit(1);
+    }
 
     return C;
 }
@@ -212,12 +243,12 @@ sparse_element *sparse_add(
 /** @brief Multiply two sparse matrices.
  *
  *  @param A Sparse complex matrix.
- *  @param nnzA Number of non-zero elements in spase matrix A.
+ *  @param nnzA Number of non-zero elements in sparse matrix A.
  *  @param rowsA Number of rows of matrix A.
  *  @param B Sparse complex matrix.
- *  @param nnzB Number of non-zero elements in spase matrix B.
+ *  @param nnzB Number of non-zero elements in sparse matrix B.
  *  @param colsB Number of cols of matrix B.
- *  @param nnzC Number of non-zero elements in the new spase matrix C.
+ *  @param nnzC Number of non-zero elements in the new sparse matrix C.
  *
  *  @return Sparse complex matrix of size nnzC.
  */
@@ -231,8 +262,15 @@ sparse_element* sparse_multiplication(
     unsigned int *nnzC
 )
 {
-    // Create the result matrix as a dynamic array
-    sparse_element* C = (sparse_element*) malloc((nnzA * nnzB) * sizeof(sparse_element));
+    // Use a dynamic array or linked list to build C without pre-allocating too much memory
+    sparse_element* C = NULL;
+    unsigned int sizeC = 0, capacityC = min(nnzA, nnzB); // Start with a small initial capacity
+    C = (sparse_element*)malloc(capacityC * sizeof(sparse_element));
+    if (C == NULL) {
+        // Handle reallocation failure
+        fprintf(stderr, "sparse_multiplication: Memory allocation failed\n");
+        exit(1);
+    }
 
     unsigned int i, j;
     complex sum, *mult;
@@ -240,23 +278,18 @@ sparse_element* sparse_multiplication(
     sparse_element* A_ptr_max = A + nnzA;
     sparse_element* B_ptr;
     sparse_element* B_ptr_max = B + nnzB;
-    sparse_element* C_ptr = C;
-    // Loop over each row of A
+
     for (i = 0; i < rowsA; i++) {
-        // Loop over each column of B
         for (j = 0; j < colsB; j++) {
             sum.real = 0.0;
             sum.imag = 0.0;
 
             A_ptr = A;
-            // Loop over each non-zero element of row i of A and column j of B
             while (A_ptr < A_ptr_max) {
                 if (A_ptr->row == i) {
                     B_ptr = B;
-                    // Search for the matching element in B
                     while (B_ptr < B_ptr_max) {
                         if (B_ptr->col == j && A_ptr->col == B_ptr->row) {
-                            // Multiply the two matching elements
                             mult = multiply_complex(A_ptr->value, B_ptr->value);
                             sum.real += mult->real;
                             sum.imag += mult->imag;
@@ -270,18 +303,33 @@ sparse_element* sparse_multiplication(
 
             // If the sum is not zero, add the new element to C
             if (sum.real != 0.0 || sum.imag != 0.0) {
-                C_ptr->row = i;
-                C_ptr->col = j;
-                C_ptr->value = sum;
-                C_ptr++;
+                // Check if we need to increase the capacity of C
+                if (sizeC == capacityC) {
+                    capacityC *= 2; // Double the capacity
+                    C = (sparse_element*)realloc(C, capacityC * sizeof(sparse_element));
+                    if (C == NULL) {
+                        // Handle reallocation failure
+                        fprintf(stderr, "sparse_multiplication: Memory reallocation failed\n");
+                        exit(1);
+                    }
+                }
+                C[sizeC].row = i;
+                C[sizeC].col = j;
+                C[sizeC].value = sum;
+                sizeC++;
             }
         }
     }
 
-    *nnzC = C_ptr - C;
-
-    // Reallocate the C array to the correct size and return
-    C = (sparse_element*)realloc(C, (*nnzC) * sizeof(sparse_element));
+    *nnzC = sizeC;
+    
+    // Reallocate C to exactly fit the number of non-zero elements
+    C = (sparse_element*)realloc(C, sizeC * sizeof(sparse_element));
+    if (C == NULL) {
+        // Handle reallocation failure
+        fprintf(stderr, "sparse_multiplication: Final memory reallocation failed\n");
+        exit(1);
+    }
 
     return C;
 }

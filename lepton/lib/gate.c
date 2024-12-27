@@ -434,6 +434,8 @@ sparse_element *recursive_gate(
 
     if (current_qubit == target) {
         debug("recursive_gate: target")
+        debug2("recursive_gate: nnz_gate=%d", nnz_gate)
+        debug2("recursive_gate: nnz_next_gate=%d", nnz_next_gate)
         full_gate = sparse_kronecker_product(
             gate, nnz_gate, next_gate, nnz_next_gate, 1 << (num_qubits-1-current_qubit), nnz_full_gate
         );

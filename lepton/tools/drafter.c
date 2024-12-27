@@ -1,4 +1,4 @@
-/* Drafter version 0.0.1
+/* Drafter
    ASCII art of circuit diagrams
 
    https://github.com/qDNA-yonsei/lepton
@@ -22,6 +22,11 @@
     #define MAX_QUBITS 16
     #define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
     #define CIRCUIT_DEPTH 128
+#elif __IA16_CMODEL_MEDIUM__
+    #define MAX_QASM_LINE_LEN 512
+    #define MAX_QUBITS 16
+    #define CIRCUIT_WIDTH 32 // Must be: MAX_QUBITS*2
+    #define CIRCUIT_DEPTH 512
 #else
     #define MAX_QASM_LINE_LEN 1024
     #define MAX_QUBITS 32
@@ -30,7 +35,7 @@
 #endif
 
 const char *presentation =
-    "DRAFTER version 0.0.5\n"
+    "DRAFTER version 0.0.6\n"
     "ASCII art of circuit diagrams\n"
     "github.com/qDNA-yonsei/lepton, 2023\n"
     "\n";
