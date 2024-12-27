@@ -39,3 +39,24 @@ https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus
 
 GHZ state:
 https://en.wikipedia.org/wiki/Greenberger%E2%80%93Horne%E2%80%93Zeilinger_state
+
+# 8088
+Shown below is Lepton running on an IBM Personal Computer PC-XT powered by an Intel 8088 microprocessor, highlighting its remarkable adaptability across a wide range of hardware platforms.
+
+| System configuration     | 9-qubit GHZ state       |
+:-------------------------:|:-------------------------:
+![System configuration](images/8088/8088_checkit.png "System configuration") | ![9-qubit GHZ state](images/8088/8088_statevec_ghz9.png "9-qubit GHZ state")
+
+| Bell circuit diagram     | Bell simulation          |
+:-------------------------:|:-------------------------:
+![Bell circuit diagram](images/8088/8088_drafter_bell.png "Bell circuit diagram") | ![Bell simulation](images/8088/8088_statevec_bell.png "Bell simulation")
+
+| MCNOT circuit diagram    | MCNOT simulation         |
+:-------------------------:|:-------------------------:
+![MCNOT circuit diagram](images/8088/8088_drafter_mcnot.png "MCNOT circuit diagram") | ![MCNOT simulation](images/8088/8088_statevec_mcnot.png "MCNOT simulation")
+
+IBM Personal Computer XT:
+https://pt.wikipedia.org/wiki/IBM_Personal_Computer_XT
+
+Intel 8088:
+https://en.wikipedia.org/wiki/Intel_8088
